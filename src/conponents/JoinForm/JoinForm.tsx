@@ -1,0 +1,265 @@
+'use client'
+
+import {useState} from 'react';
+import styles from "./joinFormStyles.module.css";
+import {InterlocutorData, UserData} from "@/conponents/MainElement/MainElement";
+
+
+interface JoinFormProps {
+    userData: UserData;
+    interlocutorData: InterlocutorData;
+    setUserData: (userData: UserData) => void;
+    setInterlocutorData: (interlocutorData: InterlocutorData) => void;
+    setIsChatOpen: (isChatOpen: boolean) => void;
+}
+
+const JoinForm: React.FC<JoinFormProps> = ({
+                                               userData,
+                                               interlocutorData,
+                                               setUserData,
+                                               setInterlocutorData,
+                                               setIsChatOpen
+                                           }) => {
+    const [error, setError] = useState<string>('');
+
+
+    const handleChangeUserAge = (event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const value = event.target.value;
+
+        if (!value) {
+            setUserData(
+                {
+                    ...userData,
+                    age: null,
+                }
+            )
+            return
+        }
+        if (!/^\d*$/.test(value)) {
+            return;
+        }
+        if (+value > 100) {
+            setUserData(
+                {
+                    ...userData,
+                    age: 100,
+                }
+            )
+            return
+        }
+        setUserData(
+            {
+                ...userData,
+                age: +value,
+            }
+        )
+        if (error) {
+            setError('')
+        }
+    };
+
+    const handleChangeAgeFrom = (event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const value = event.target.value;
+
+        if (!value) {
+            setInterlocutorData({
+                ...interlocutorData,
+                ageFrom: null,
+            })
+            return
+        }
+        if (!/^\d*$/.test(value)) {
+            return;
+        }
+        if (+value > 100) {
+            setInterlocutorData({
+                ...interlocutorData,
+                ageFrom: 100,
+            })
+            return
+        }
+        setInterlocutorData({
+            ...interlocutorData,
+            ageFrom: +value,
+        })
+        if (error) {
+            setError('')
+        }
+    };
+
+    const handleChangeAgeTo = (event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const value = event.target.value;
+
+        if (!value) {
+            setInterlocutorData({
+                ...interlocutorData,
+                ageTo: null,
+            })
+            return
+        }
+        if (!/^\d*$/.test(value)) {
+            return;
+        }
+        if (+value > 100) {
+            setInterlocutorData({
+                ...interlocutorData,
+                ageTo: 100,
+            })
+            return
+        }
+        setInterlocutorData({
+            ...interlocutorData,
+            ageTo: +value,
+        })
+        if (error) {
+            setError('')
+        }
+    };
+
+    const handleChangeUserSex = (event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+        const value = event.target.value;
+
+        if (value === '') {
+            return
+        }
+
+        setUserData(
+            {
+                ...userData,
+                sex: value,
+            }
+        )
+        if (error) {
+            setError('')
+        }
+
+    };
+
+    const handleChangeInterlocutorSex = (event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+        const value = event.target.value;
+
+        if (value === '') {
+            return
+        }
+        setInterlocutorData({
+            ...interlocutorData,
+            sex: value,
+        })
+        if (error) {
+            setError('')
+        }
+
+    }
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
+
+        if (!userData.age || !userData.sex || !interlocutorData.ageFrom || !interlocutorData.ageTo || !interlocutorData.sex) {
+            setError('Хм...щось не так, спробуй ще раз');
+        } else if (interlocutorData.ageFrom < 18) {
+            setError('Вкажіть вік від 18 до 100');
+        } else if (userData.age < 18) {
+            setError('Вікове обмеження - 18 років');
+        } else if (interlocutorData.ageFrom > interlocutorData.ageTo) {
+            setError('Хм...не коректно вказано віковий діапазон')
+        } else {
+            setError('');
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem('interlocutorData', JSON.stringify(interlocutorData));
+            setIsChatOpen(true)
+
+        }
+    }
+
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className={styles.form}
+        >
+            <div className={styles.inputsBlockWrapper}>
+                <p className={styles.inputTitle}>Ваш вік та стать</p>
+                <div className={styles.inputsBlock}>
+                    <input
+                        required
+                        placeholder={'Вік'}
+                        type='text'
+                        name='user-age'
+                        id='user-age'
+                        autoComplete="off"
+                        onChange={handleChangeUserAge}
+                        value={userData.age === null ? '' : userData.age}
+                        className={styles.input}
+                    />
+                    <select
+                        required
+                        className={styles.sexSelect}
+                        onChange={handleChangeUserSex}
+                        value={userData.sex}
+                    >
+                        <option value="" disabled>Cтать</option>
+                        <option value='male'>Чоловік</option>
+                        <option value='female'>Жінка</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className={styles.inputsBlockWrapper}>
+                <p className={styles.inputTitle}>Віковий діапазон та стать співрозмовника</p>
+                <div className={styles.inputsBlock}>
+                    <input
+                        required
+                        placeholder={'від'}
+                        type='text'
+                        name='user-age'
+                        id='user-age'
+                        autoComplete="off"
+                        onChange={handleChangeAgeFrom}
+                        value={interlocutorData.ageFrom === null ? '' : interlocutorData.ageFrom}
+                        className={styles.input}
+                    />
+                    <input
+                        required
+                        placeholder={'до'}
+                        type='text'
+                        name='user-age'
+                        id='user-age'
+                        autoComplete="off"
+                        onChange={handleChangeAgeTo}
+                        value={interlocutorData.ageTo === null ? '' : interlocutorData.ageTo}
+                        className={styles.input}
+                    />
+                    <select
+                        required
+                        className={styles.sexSelect}
+                        onChange={handleChangeInterlocutorSex}
+                        value={interlocutorData.sex}
+                    >
+                        <option value="" disabled>Cтать</option>
+                        <option value='male'>Чоловік</option>
+                        <option value='female'>Жінка</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className={styles.inputsBlockWrapper}>
+                {error && <p className={styles.inputError}>{error}</p>}
+                <div className={styles.buttonContainer}>
+                    <div className={styles.buttonGlow}></div>
+                    <button className={styles.submitButton} type={'submit'}>
+                        Розпочати
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    )
+}
+
+export default JoinForm;
