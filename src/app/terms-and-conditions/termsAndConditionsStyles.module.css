@@ -1,0 +1,33 @@
+.policyPage {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 0 64px 0;
+
+    .goHomeLink {
+        text-decoration: none;
+        color: var(--dirty-blue);
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &:active {
+            text-decoration: none;
+        }
+
+    }
+
+    .policyBlock {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .text {
+            margin-left: 24px;
+            color: var(--dirty-blue);
+        }
+    }
+}
+
+

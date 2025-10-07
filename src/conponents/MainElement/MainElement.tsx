@@ -61,7 +61,6 @@ const MainElement = () => {
                         userData={userData}
                         interlocutorData={interlocutorData}
                         setUserData={setUserData}
-                        setInterlocutorData={setInterlocutorData}
                         setIsChatOpen={setIsChatOpen}
                         userId={userId}
                     />

@@ -173,7 +173,6 @@ const JoinForm: React.FC<JoinFormProps> = ({
             localStorage.setItem('userData', JSON.stringify(userData));
             localStorage.setItem('interlocutorData', JSON.stringify(interlocutorData));
             setIsChatOpen(true)
-
         }
     }
 
@@ -246,6 +245,26 @@ const JoinForm: React.FC<JoinFormProps> = ({
                         <option value='female'>Жінка</option>
                     </select>
                 </div>
+            </div>
+
+            <div className={styles.policy_wrapper}>
+                <input
+                    className={styles.checkbox}
+                    id='policy_id'
+                    type={'checkbox'}
+                    name='policy_checkbox'
+                    required
+                />
+
+                <p className={styles.policy_text}>
+                    <label className={styles.checkbox_label} htmlFor={'policy_id'}>Прийняти</label>
+                    &nbsp;
+                    <a className={styles.policy_link}
+                       href={`${process.env.NEXT_PUBLIC_API_URL}/terms-and-conditions`}
+                    >
+                        політику та умови
+                    </a>
+                </p>
             </div>
 
             <div className={styles.inputsBlockWrapper}>

@@ -70,25 +70,12 @@
                 opacity: 0.5;
             }
         }
-
-        .buttonExit {
-            background-color: var(--transparent-red02);
-            color: var(--main-red);
-            opacity: 0.8;
-
-            &:hover {
-                background-color: var(--transparent-red04);
-            }
-
-            &:active {
-                opacity: 1;
-            }
-        }
     }
 
     .chartHistory {
         display: flex;
         flex-direction: column;
+        margin-top: auto;
         gap: 4px;
         overflow-y: scroll;
         padding-right: 12px;
@@ -162,6 +149,20 @@
     }
 }
 
+.buttonExit {
+    background-color: var(--transparent-red02);
+    color: var(--main-red);
+    opacity: 0.8;
+
+    &:hover {
+        background-color: var(--transparent-red04);
+        color: var(--main-red);
+    }
+
+    &:active {
+        opacity: 1;
+    }
+}
 
 .chartElement {
     display: flex;
@@ -197,7 +198,6 @@
     margin-top: 32px;
     padding-right: 12px;
 }
-
 
 .sendButton {
     height: 100%;
@@ -259,7 +259,6 @@
         font-size: 16px;
     }
 
-
     &:focus {
         border: 1px solid var(--main-gray);
     }
@@ -283,6 +282,7 @@
     margin-top: 24px;
 
     .leftChatText {
+        text-align: center;
         font-size: 16px;
         font-weight: 400;
         color: var(--dirty-blue);
@@ -312,13 +312,14 @@
     }
 }
 
-
 .connectionStatus {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 8px;
 
     .connectionText {
         font-size: 18px;
@@ -326,7 +327,22 @@
         color: var(--dirty-blue);
     }
 
+    .connectionAnimation {
+        display: flex;
+    }
+
     .connectionIcon {
         animation: connect 5s linear infinite;
+    }
+
+    .dontLeaveText {
+        font-size: 14px;
+        color: var(--main-gray);
+        text-align: center;
+    }
+
+    .countdown {
+        font-size: 14px;
+        color: var(--dirty-blue)
     }
 }
