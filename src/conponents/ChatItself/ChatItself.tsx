@@ -11,37 +11,22 @@ import debounce from 'lodash.debounce';
 import ExitModal from "@/conponents/Modals/ExitModal";
 import AddToBlackListModal from "@/conponents/Modals/AddToBlackListModal";
 import CleanBlackListModal from "@/conponents/Modals/CleanBlackListModal";
+import {Message, MODALS} from "@/types/generalTypes";
 
-interface ChatItselfProps {
+export interface ChatItselfProps {
     userData: UserData;
     interlocutorData: InterlocutorData;
     setUserData: (userData: UserData) => void;
-    setInterlocutorData: (interlocutorData: InterlocutorData) => void;
     setIsChatOpen: (isChatOpen: boolean) => void;
     userId: string;
-}
-
-interface Message {
-    uId: string;
-    message: string;
-    createdAt: number;
-    pending: boolean;
-}
-
-export enum MODALS {
-    MODAL_OFF = 'MODAL_OFF',
-    IS_EXIT = 'IS_EXIT',
-    IS_BLACKLIST = 'IS_BLACKLIST',
-    IS_CLEAN_BLACKLIST = 'IS_CLEAN_BLACKLIST',
 }
 
 const ChatItself: React.FC<ChatItselfProps> = ({
                                                    userData,
                                                    interlocutorData,
                                                    setUserData,
-                                                   setInterlocutorData,
                                                    setIsChatOpen,
-                                                   userId
+                                                   userId,
                                                }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [newMessage, setNewMessage] = useState<string>('');
@@ -52,9 +37,21 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [chatId, setChatId] = useState<string | null>(null);
     const [theOneWhoLeft, setTheOneWhoLeft] = useState<string>('');
     const [modal, setModal] = useState<MODALS>(MODALS.MODAL_OFF);
+    const [countdown, setCountdown] = useState<number>(40);
     const [matchId, setMatchId] = useState<string | null>(null);
+
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
+    const intervalRef = useRef<any>(null);
+
+    const STATUS_WAITING = `Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`;
+    const STATUS_CONNECTED = "З'єднано";
+
+    useEffect(() => {
+        if (countdown === 0) {
+            setIsChatOpen(false)
+        }
+    }, [countdown]);
 
     useEffect(() => {
         if (typingRef.current) {
@@ -86,39 +83,75 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
 
     useEffect(() => {
-        const socketInstance = io("http://localhost:3001");
-        // setSocket(socketInstance);
+        const socketInstance = io("http://localhost:3001", {
+            reconnection: true,
+            reconnectionAttempts: 20,
+            timeout: 10000,
+            reconnectionDelay: 2000,
+        });
+
+        let wasConnectedBefore = false;
+        let localChatId = '';
+
 
         socketInstance.on("connect", () => {
             setSocket(socketInstance);
-            socketInstance.emit("find-chat", {
-                uId: userId,
-                userData,
-                interlocutorData
-            });
+            clearInterval(intervalRef.current)
+            setCountdown(40)
+
+            if (!wasConnectedBefore) {
+                wasConnectedBefore = true;
+                socketInstance.emit("find-chat", {
+                    uId: userId,
+                    userData,
+                    interlocutorData,
+                });
+            } else {
+                console.log(localChatId, "LOKAL CHAT ID")
+                socketInstance.emit("reconnect-to-chat", {
+                    chatId: localChatId,
+                    uId: userId,
+                    userData,
+                    interlocutorData,
+                });
+            }
         });
 
-        socketInstance.on("disconnect", (reason) => {
+        socketInstance.on("disconnect", () => {
             setSocket(null);
+
+            clearInterval(intervalRef.current)
+
+            if (countdown > 0) {
+                intervalRef.current = setInterval(() => {
+                    setCountdown((prev) => {
+                        if (prev > 0) {
+                            return prev - 1
+                        } else {
+                            clearInterval(intervalRef.current)
+                            return 0
+                        }
+                    });
+                }, 1000)
+            }
         });
 
 
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
-            console.log(`Чат створено: ${chatId} з користувачем ${matchId}`);
-            setChatId(chatId)
+            setChatId(chatId);
+            localChatId = chatId;
             setMatchId(userId === seekerId ? matchId : seekerId);
         });
 
         socketInstance.on("waiting-for-match", () => {
-            setStatus(`Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`);
+            setStatus(STATUS_WAITING);
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
-            console.log(usersInRoom, 'usersInRoom')
             if (usersInRoom === 1) {
-                setStatus(`Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`);
+                setStatus(STATUS_WAITING);
             } else {
-                setStatus("З'єднано!");
+                setStatus(STATUS_CONNECTED);
             }
         });
 
@@ -139,6 +172,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current)
+            }
             socketInstance.disconnect();
         };
     }, []);
@@ -258,6 +294,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         }
     }
 
+    const handleExitOnDisconnect = () => {
+        setIsChatOpen(false)
+        setMatchId(null)
+    }
+
 
     useEffect(() => {
         if (historyRef.current) {
@@ -323,10 +364,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         </div>
 
-                        {theOneWhoLeft && theOneWhoLeft !== userId ? (
+                        {(theOneWhoLeft && theOneWhoLeft !== userId) || (chatId && status && status === STATUS_WAITING) ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    Нажаль співрозмовник покинув чат
+                                    {chatId && status && status === STATUS_WAITING ? 'Співрозмовник має проблеми з підключенням або покинув чат' : 'Нажаль співрозмовник покинув чат'}
+
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
@@ -386,18 +428,44 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </p>
                             : ''
                         }
-                        {status && messages.length === 0 && !isTypingObj.isTyping && !theOneWhoLeft && socket.connected
-                            ? <p className={styles.isTyping}>
-                                {status}
-                            </p> : ''
+                        {
+                            status &&
+                            messages.length === 0 &&
+                            !isTypingObj.isTyping &&
+                            !theOneWhoLeft &&
+                            socket.connected &&
+                            !(chatId && status === STATUS_WAITING)
+                                ? <p className={styles.isTyping}>
+                                    {status}
+                                </p> : ''
                         }
                     </>
                 ) : (
                     <div className={styles.connectionStatus}>
-                        <p className={styles.connectionText}>Підключення до сервера...</p>
-                        <p className={styles.connectionIcon}>🔌</p>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <p>🖥️</p>
+                        {chatId ? (<p className={styles.connectionText}>Втрата зв'язку, намагаюсь відновити...</p>) : (
+                            <p className={styles.connectionText}>Схоже немає підключення...</p>)}
+
+                        <div className={styles.connectionAnimation}>
+                            <p className={styles.connectionIcon}>🔌</p>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <p>🖥️</p>
+                        </div>
+                        {chatId ? <p className={styles.countdown}>{countdown} сек до відключення</p> : ''}
+                        {chatId && countdown < 10 ? (
+                            <p className={`${styles.dontLeaveText} `}>
+                                Хм...схоже все погано. Напевно доведеться роз'єднати 😔
+                            </p>
+                        ) : ''}
+                        {chatId && countdown >= 10 ? (
+                            <p className={`${styles.dontLeaveText} `}>
+                                Дай мені шанс, не залишай чат щоб не втратити співрозмовника.
+                            </p>
+                        ) : ''}
+                        <p className={`${styles.generalButton} ${styles.buttonExit}`}
+                           onClick={handleExitOnDisconnect}
+                        >
+                            Вийти
+                        </p>
                     </div>)}
 
                 <form
@@ -412,12 +480,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     placeholder="Повідомлення..."
                     className={styles.textarea}
                     maxLength={200}
-                    disabled={!!theOneWhoLeft || !socket?.connected}
+                    disabled={!!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
                 />
-                    <button disabled={!chatId || !newMessage || !!theOneWhoLeft || !socket?.connected}
-                            className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
-                            type={'button'}
-                            onClick={handleSubmit}>
+                    <button
+                        disabled={!chatId || !newMessage || !!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
+                        className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
+                        type={'button'}
+                        onClick={handleSubmit}>
                         Надіслати
                     </button>
                 </form>

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './modalsStyles.module.css'
-import {MODALS} from "@/conponents/ChatItself/ChatItself";
+import {MODALS} from "@/types/generalTypes";
 
 interface ExitModalProps {
     setModal: (value: MODALS) => void;

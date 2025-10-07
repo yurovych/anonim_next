@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './modalsStyles.module.css'
-import {MODALS} from "@/conponents/ChatItself/ChatItself";
+import {MODALS} from "@/types/generalTypes";
 
 interface AddToBlackListModalProps {
     setModal: (value: MODALS) => void;
