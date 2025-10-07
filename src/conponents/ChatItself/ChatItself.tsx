@@ -107,7 +107,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     interlocutorData,
                 });
             } else {
-                console.log(localChatId, "LOKAL CHAT ID")
                 socketInstance.emit("reconnect-to-chat", {
                     chatId: localChatId,
                     uId: userId,
