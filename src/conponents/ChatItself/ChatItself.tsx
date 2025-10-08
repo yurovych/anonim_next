@@ -83,7 +83,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
 
     useEffect(() => {
-        const socketInstance = io("http://localhost:3001", {
+        const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
             reconnectionAttempts: 20,
             timeout: 10000,
@@ -107,7 +107,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     interlocutorData,
                 });
             } else {
-                console.log(localChatId, "LOKAL CHAT ID")
                 socketInstance.emit("reconnect-to-chat", {
                     chatId: localChatId,
                     uId: userId,
