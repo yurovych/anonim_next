@@ -93,8 +93,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             transports: ['websocket'],
             transportOptions: {
                 websocket: {
-                    pingInterval: 7000,
-                    pingTimeout: 7000,
+                    pingInterval: 10000,
+                    pingTimeout: 10000,
                 },
             },
 
