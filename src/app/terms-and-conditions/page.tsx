@@ -4,7 +4,7 @@ const TermsAndConditions = () => {
     return (
         <div className={styles.policyPage}>
             <a className={styles.goHomeLink}
-               href={`${process.env.NEXT_PUBLIC_API_URL}`}
+               href={`${process.env.NEXT_PUBLIC_CLIENT_URL}`}
             >
                 ← На головну
             </a>

@@ -260,7 +260,7 @@ const JoinForm: React.FC<JoinFormProps> = ({
                     <label className={styles.checkbox_label} htmlFor={'policy_id'}>Прийняти</label>
                     &nbsp;
                     <a className={styles.policy_link}
-                       href={`${process.env.NEXT_PUBLIC_API_URL}/terms-and-conditions`}
+                       href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/terms-and-conditions`}
                     >
                         політику та умови
                     </a>

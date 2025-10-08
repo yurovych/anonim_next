@@ -83,7 +83,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
 
     useEffect(() => {
-        const socketInstance = io("http://localhost:3001", {
+        const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
             reconnectionAttempts: 20,
             timeout: 10000,
