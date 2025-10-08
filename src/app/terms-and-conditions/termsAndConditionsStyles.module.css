@@ -28,6 +28,19 @@
             color: var(--dirty-blue);
         }
     }
+
+    .link {
+        text-decoration: none;
+        color: var(--dirty-blue);
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &:active {
+            text-decoration: none;
+        }
+    }
 }
 
 

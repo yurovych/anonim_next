@@ -79,7 +79,7 @@
     }
 }
 
-.policy_wrapper {
+.policyWrapper {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -91,17 +91,17 @@
         height: 14px;
     }
 
-    .checkbox_label {
+    .checkboxLabel {
         cursor: pointer;
     }
 
-    .policy_text {
+    .policyText {
         white-space: nowrap;
         font-size: 16px;
         color: var(--text-main)
     }
 
-    .policy_link {
+    .policyLink {
         text-decoration: none;
         color: var(--dirty-blue);
 

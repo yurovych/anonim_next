@@ -247,7 +247,7 @@ const JoinForm: React.FC<JoinFormProps> = ({
                 </div>
             </div>
 
-            <div className={styles.policy_wrapper}>
+            <div className={styles.policyWrapper}>
                 <input
                     className={styles.checkbox}
                     id='policy_id'
@@ -256,10 +256,10 @@ const JoinForm: React.FC<JoinFormProps> = ({
                     required
                 />
 
-                <p className={styles.policy_text}>
-                    <label className={styles.checkbox_label} htmlFor={'policy_id'}>Прийняти</label>
+                <p className={styles.policyText}>
+                    <label className={styles.checkboxLabel} htmlFor={'policy_id'}>Прийняти</label>
                     &nbsp;
-                    <a className={styles.policy_link}
+                    <a className={styles.policyLink}
                        href={'/terms-and-conditions'}
                     >
                         політику та умови
