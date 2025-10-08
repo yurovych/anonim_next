@@ -39,6 +39,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [modal, setModal] = useState<MODALS>(MODALS.MODAL_OFF);
     const [countdown, setCountdown] = useState<number>(40);
     const [matchId, setMatchId] = useState<string | null>(null);
+    const [peopleInRoom, setPeopleInRoom] = useState<number>(0);
 
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
@@ -88,6 +89,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             reconnectionAttempts: 20,
             timeout: 10000,
             reconnectionDelay: 2000,
+            query: {userId: userId},
         });
 
         let wasConnectedBefore = false;
@@ -117,7 +119,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
         socketInstance.on("disconnect", () => {
             setSocket(null);
-
             clearInterval(intervalRef.current)
 
             if (countdown > 0) {
@@ -136,10 +137,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
 
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
-            setChatId(chatId);
-            localChatId = chatId;
             wasConnectedBefore = true;
+            localChatId = chatId;
+            setChatId(chatId);
             setMatchId(userId === seekerId ? matchId : seekerId);
+            setStatus(STATUS_CONNECTED);
         });
 
         socketInstance.on("waiting-for-match", () => {
@@ -147,12 +149,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
-            console.log('USERS IN ROOM: ', usersInRoom, '')
-            if (usersInRoom === 1) {
-                setStatus(STATUS_WAITING);
-            } else if (usersInRoom === 2) {
-                setStatus(STATUS_CONNECTED);
-            } else if (usersInRoom > 2) {
+            setPeopleInRoom(usersInRoom);
+            if (usersInRoom > 2) {
                 setIsChatOpen(false)
             }
         });
@@ -169,12 +167,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setIsTypingObj(message);
         });
 
-        socketInstance.on("chat-ended", (message: { uId: string }) => {
-            setTheOneWhoLeft(message.uId)
+        socketInstance.on("chat-ended", () => {
+            setStatus(STATUS_WAITING)
+        });
+
+        socketInstance.on("reconnected", () => {
+            setStatus('')
         });
 
         socketInstance.on("chat-left", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
+            setStatus('')
             localChatId = ''
             wasConnectedBefore = false;
         });
@@ -314,8 +317,27 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         }
     }, [messages]);
 
-
-    console.log(status, 'STATUS')
+    const getAddToBlackListElement = () => {
+        return (
+            <>
+                {matchId ? (
+                        <p
+                            onClick={userData.blackList.includes(matchId) ? () => {
+                                }
+                                : () => setModal(MODALS.IS_BLACKLIST)}
+                            className={`${styles.generalButton} ${styles.buttonAddToBlackList}`}
+                        >
+                            {userData.blackList.includes(matchId)
+                                ? 'Користувач в чорному списку'
+                                : 'Додати в чорний список'
+                            }
+                        </p>
+                    )
+                    : ''
+                }
+            </>
+        )
+    }
 
     return (
         <>
@@ -375,11 +397,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         </div>
 
-                        {(theOneWhoLeft && theOneWhoLeft !== userId) || (chatId && status && status === STATUS_WAITING) ? (
+                        {(!theOneWhoLeft && chatId && status && status === STATUS_WAITING) || (!theOneWhoLeft && chatId && peopleInRoom < 2) ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    {chatId && status && status === STATUS_WAITING ? 'Співрозмовник має проблеми з підключенням або покинув чат' : 'Нажаль співрозмовник покинув чат'}
-
+                                    Співрозмовник має проблеми з підключенням або покинув чат!
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
@@ -393,24 +414,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         На головну
                                     </p>
                                 </div>
-                                {matchId ? (
-                                        <p
-                                            onClick={userData.blackList.includes(matchId) ? () => {
-                                            } : () => setModal(MODALS.IS_BLACKLIST)}
-                                            className={`${styles.generalButton} ${styles.buttonAddToBlackList}`}
-                                        >
-                                            {userData.blackList.includes(matchId) ? 'Користувач в чорному списку' : 'Додати в чорний список'}
-                                        </p>
-                                    )
-                                    : ''
-                                }
+                                {getAddToBlackListElement()}
                             </div>
                         ) : ''}
 
-                        {theOneWhoLeft && theOneWhoLeft === userId ? (
+                        {theOneWhoLeft ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    Ви покинули чат
+                                    {theOneWhoLeft === userId ? 'Ви покинули чат!' : 'Нажаль співрозмовник покинув чат!'}
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
@@ -424,18 +435,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         На головну
                                     </p>
                                 </div>
-                                {chatId && matchId ? (
-                                        <p
-                                            onClick={userData.blackList.includes(matchId) ? () => {
-                                                }
-                                                : () => setModal(MODALS.IS_BLACKLIST)}
-                                            className={`${styles.generalButton} ${styles.buttonAddToBlackList}`}
-                                        >
-                                            {userData.blackList.includes(matchId) ? 'Користувач в чорному списку' : 'Додати в чорний список'}
-                                        </p>
-                                    )
-                                    : ''
-                                }
+                                {getAddToBlackListElement()}
                             </div>
                         ) : ''}
 
