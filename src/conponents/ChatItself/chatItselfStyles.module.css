@@ -200,11 +200,15 @@
 }
 
 .sendButton {
-    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 48px;
+    width: 48px;
     top: 2px;
     left: 2px;
     padding: 0 10px;
-    color: var(--text-main);
     background-color: var(--transparent-blue);
     border-radius: 12px;
     outline: none;
@@ -216,10 +220,9 @@
         font-size: 16px;
     }
 
-
     &:hover {
         cursor: pointer;
-        color: var(--dirty-blue);
+        background-color: var(--transparent-gray);
     }
 
     &:active {
@@ -229,7 +232,6 @@
 
 .disabledButton {
     opacity: 0.4;
-
 
     &:hover {
         color: var(--text-main);
@@ -293,7 +295,7 @@
         gap: 6px;
 
         .chatEndButton {
-            width: 120px;
+            min-width: 100px;
         }
     }
 

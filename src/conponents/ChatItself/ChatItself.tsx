@@ -284,6 +284,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         setMessages([]);
         setChatId(null)
         setMatchId(null)
+        setChatId(null)
         if (socket) {
             socket.emit("find-chat", {
                 uId: userId,
@@ -371,11 +372,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
-                                       className={`${styles.generalButton} ${styles.chatEndButton}`}>
-                                        Новий пошук
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        Пошук
                                     </p>
                                     <p onClick={handleGoHome}
-                                       className={`${styles.generalButton} ${styles.chatEndButton}`}>
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
                                         На головну
                                     </p>
                                 </div>
@@ -399,10 +402,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     Ви покинули чат
                                 </p>
                                 <div className={styles.endChatButtons}>
-                                    <p onClick={handleNewChat} className={styles.generalButton}>
-                                        Новий пошук
+                                    <p onClick={handleNewChat}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        Пошук
                                     </p>
-                                    <p onClick={handleGoHome} className={styles.generalButton}>
+                                    <p onClick={handleGoHome}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
                                         На головну
                                     </p>
                                 </div>
@@ -485,8 +492,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         disabled={!chatId || !newMessage || !!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
                         className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
                         type={'button'}
-                        onClick={handleSubmit}>
-                        Надіслати
+                        onClick={handleSubmit}
+                    >
+                        <img src="/icons/send_icon.svg" alt="send"/>
                     </button>
                 </form>
             </div>
