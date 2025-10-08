@@ -37,7 +37,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [chatId, setChatId] = useState<string | null>(null);
     const [theOneWhoLeft, setTheOneWhoLeft] = useState<string>('');
     const [modal, setModal] = useState<MODALS>(MODALS.MODAL_OFF);
-    const [countdown, setCountdown] = useState<number>(40);
+    const [countdown, setCountdown] = useState<number>(60);
     const [matchId, setMatchId] = useState<string | null>(null);
     const [peopleInRoom, setPeopleInRoom] = useState<number>(0);
 
@@ -86,8 +86,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     useEffect(() => {
         const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
-            reconnectionAttempts: 20,
-            timeout: 10000,
+            reconnectionAttempts: 30,
+            timeout: 5000,
             reconnectionDelay: 2000,
             query: {userId: userId},
         });
@@ -99,7 +99,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("connect", () => {
             setSocket(socketInstance);
             clearInterval(intervalRef.current)
-            setCountdown(40)
+            setCountdown(60)
 
             if (!wasConnectedBefore) {
                 socketInstance.emit("find-chat", {
@@ -149,6 +149,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
+            console.log(usersInRoom, 'usersInRoom')
             setPeopleInRoom(usersInRoom);
             if (usersInRoom === 2) {
                 setTheOneWhoLeft('')
