@@ -6,6 +6,11 @@ import styles from "@/app/page.module.css";
 export const metadata: Metadata = {
     title: "Enónym",
     description: "Anonymous chart for ukrainians in Denmark",
+    icons: {
+        icon: '/icons/favicon_icon.svg',
+        apple: '/icons/favicon_icon.svg',
+    },
+
 };
 
 export default function RootLayout({
