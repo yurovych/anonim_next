@@ -35,7 +35,6 @@ const MainElement = () => {
     useEffect(() => {
         const userData: string | null = localStorage.getItem('userData');
         const interlocutorData: string | null = localStorage.getItem('interlocutorData');
-        const storedUserId = localStorage.getItem('userId');
 
         if (interlocutorData) {
             setInterlocutorData(JSON.parse(interlocutorData));
@@ -44,13 +43,8 @@ const MainElement = () => {
             setUserData(JSON.parse(userData));
         }
 
-        if (storedUserId) {
-            setUserId(storedUserId);
-        } else {
-            const id = uuidv4();
-            setUserId(id);
-            localStorage.setItem('userId', id);
-        }
+        const id = uuidv4();
+        setUserId(id);
     }, [])
 
     return (

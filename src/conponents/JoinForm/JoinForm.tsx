@@ -162,10 +162,10 @@ const JoinForm: React.FC<JoinFormProps> = ({
 
         if (!userData.age || !userData.sex || !interlocutorData.ageFrom || !interlocutorData.ageTo || !interlocutorData.sex) {
             setError('Хм...щось не так, спробуй ще раз');
-        } else if (interlocutorData.ageFrom < 18) {
-            setError('Вкажіть вік від 18 до 100');
-        } else if (userData.age < 18) {
-            setError('Вікове обмеження - 18 років');
+        } else if (interlocutorData.ageFrom < 16) {
+            setError('Вкажіть вік від 16 до 100');
+        } else if (userData.age < 16) {
+            setError('Вікове обмеження - 16 років');
         } else if (interlocutorData.ageFrom > interlocutorData.ageTo) {
             setError('Хм...не коректно вказано віковий діапазон')
         } else {
