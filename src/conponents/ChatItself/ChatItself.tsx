@@ -44,6 +44,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
     const intervalRef = useRef<any>(null);
+    const inputRef = useRef<any>(null);
 
     const STATUS_WAITING = `Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`;
     const STATUS_CONNECTED = "З'єднано";
@@ -242,6 +243,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             });
             setNewMessage('')
         }
+        inputRef.current.focus();
 
     }
 
@@ -413,11 +415,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     Співрозмовник має проблеми з підключенням або покинув чат!
                                 </p>
                                 <div className={styles.endChatButtons}>
-                                    <p onClick={handleNewChat}
-                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
-                                    >
-                                        Пошук
-                                    </p>
                                     <p onClick={handleGoHome}
                                        className={`${styles.generalButton} ${styles.chatEndButton}`}
                                     >
@@ -504,6 +501,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     value={newMessage}
                     onInput={handleInput}
                     rows={1}
+                    ref={inputRef}
                     placeholder="Повідомлення..."
                     className={styles.textarea}
                     maxLength={200}
