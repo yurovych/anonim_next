@@ -192,7 +192,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setStatus('')
             setModal(MODALS.MODAL_OFF);
             setChatId(null)
-            setMatchId(null)
             localChatId = ''
             wasConnectedBefore = false;
         });
