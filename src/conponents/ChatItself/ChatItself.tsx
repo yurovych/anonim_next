@@ -150,6 +150,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
         socketInstance.on("room-size", ({usersInRoom}) => {
             setPeopleInRoom(usersInRoom);
+            if (usersInRoom === 2) {
+                setTheOneWhoLeft('')
+            }
             if (usersInRoom > 2) {
                 setIsChatOpen(false)
             }
@@ -178,6 +181,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("chat-left", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
             setStatus('')
+            setModal(MODALS.MODAL_OFF);
+            setChatId(null)
+            setMatchId(null)
             localChatId = ''
             wasConnectedBefore = false;
         });
@@ -245,8 +251,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 uId: userId,
                 chatId: chatId,
             });
-            setTheOneWhoLeft(userId)
-            setModal(MODALS.MODAL_OFF);
         }
     }
 
@@ -286,8 +290,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 });
                 setIsChatOpen(false)
             }
-            setChatId(null)
-            setMatchId(null)
         }
     }
 
