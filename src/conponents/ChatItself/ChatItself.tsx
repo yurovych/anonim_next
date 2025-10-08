@@ -90,6 +90,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             timeout: 5000,
             reconnectionDelay: 2000,
             query: {userId: userId},
+            transports: ['websocket'],
+            transportOptions: {
+                websocket: {
+                    pingInterval: 7000,
+                    pingTimeout: 7000,
+                },
+            },
+
         });
 
         let wasConnectedBefore = false;
