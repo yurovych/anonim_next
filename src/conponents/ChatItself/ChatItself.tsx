@@ -100,7 +100,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setCountdown(40)
 
             if (!wasConnectedBefore) {
-                wasConnectedBefore = true;
                 socketInstance.emit("find-chat", {
                     uId: userId,
                     userData,
@@ -139,6 +138,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
             setChatId(chatId);
             localChatId = chatId;
+            wasConnectedBefore = true;
             setMatchId(userId === seekerId ? matchId : seekerId);
         });
 
@@ -147,10 +147,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
+            console.log('USERS IN ROOM: ', usersInRoom, '')
             if (usersInRoom === 1) {
                 setStatus(STATUS_WAITING);
-            } else {
+            } else if (usersInRoom === 2) {
                 setStatus(STATUS_CONNECTED);
+            } else if (usersInRoom > 2) {
+                setIsChatOpen(false)
             }
         });
 
@@ -168,6 +171,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
         socketInstance.on("chat-ended", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
+        });
+
+        socketInstance.on("chat-left", (message: { uId: string }) => {
+            setTheOneWhoLeft(message.uId)
+            localChatId = ''
+            wasConnectedBefore = false;
         });
 
         return () => {
@@ -284,7 +293,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         setMessages([]);
         setChatId(null)
         setMatchId(null)
-        setChatId(null)
         if (socket) {
             socket.emit("find-chat", {
                 uId: userId,
@@ -305,6 +313,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             historyRef.current.scrollTop = historyRef.current.scrollHeight;
         }
     }, [messages]);
+
+
+    console.log(status, 'STATUS')
 
     return (
         <>
@@ -382,7 +393,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         На головну
                                     </p>
                                 </div>
-                                {chatId && matchId ? (
+                                {matchId ? (
                                         <p
                                             onClick={userData.blackList.includes(matchId) ? () => {
                                             } : () => setModal(MODALS.IS_BLACKLIST)}
