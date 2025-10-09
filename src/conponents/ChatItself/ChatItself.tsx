@@ -10,7 +10,6 @@ import {io, Socket} from "socket.io-client";
 import debounce from 'lodash.debounce';
 import ExitModal from "@/conponents/Modals/ExitModal";
 import AddToBlackListModal from "@/conponents/Modals/AddToBlackListModal";
-import CleanBlackListModal from "@/conponents/Modals/CleanBlackListModal";
 import {Message, MODALS} from "@/types/generalTypes";
 
 export interface ChatItselfProps {
@@ -19,6 +18,8 @@ export interface ChatItselfProps {
     setUserData: (userData: UserData) => void;
     setIsChatOpen: (isChatOpen: boolean) => void;
     userId: string;
+    modal: MODALS;
+    setModal: (modal: MODALS) => void;
 }
 
 const ChatItself: React.FC<ChatItselfProps> = ({
@@ -27,6 +28,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                    setUserData,
                                                    setIsChatOpen,
                                                    userId,
+                                                   modal,
+                                                   setModal
                                                }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [newMessage, setNewMessage] = useState<string>('');
@@ -36,7 +39,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [status, setStatus] = useState<string>('');
     const [chatId, setChatId] = useState<string | null>(null);
     const [theOneWhoLeft, setTheOneWhoLeft] = useState<string>('');
-    const [modal, setModal] = useState<MODALS>(MODALS.MODAL_OFF);
     const [countdown, setCountdown] = useState<number>(60);
     const [matchId, setMatchId] = useState<string | null>(null);
     const [peopleInRoom, setPeopleInRoom] = useState<number>(0);
@@ -256,6 +258,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (isTouch) {
+            return;
+        }
+
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             handleSubmit();
@@ -285,16 +293,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             localStorage.setItem('userData', JSON.stringify(newUserData))
             setModal(MODALS.MODAL_OFF);
         }
-    }
-
-    const confirmCleanBlackList = () => {
-        const newUserData = {
-            ...userData,
-            blackList: []
-        }
-        setUserData(newUserData)
-        localStorage.setItem('userData', JSON.stringify(newUserData))
-        confirmLeaveChat()
     }
 
     const handleGoHome = () => {
@@ -369,8 +367,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             {modal === MODALS.IS_BLACKLIST ?
                 <AddToBlackListModal setModal={setModal}
                                      confirm={confirmAddToBlackList}/> : ''}
-            {modal === MODALS.IS_CLEAN_BLACKLIST ?
-                <CleanBlackListModal setModal={setModal} confirm={confirmCleanBlackList}/> : ''}
 
             <div className={styles.chart}>
                 {socket?.connected ? (
@@ -387,14 +383,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         ) : ''}
 
                                         <div className={styles.summaryButtons}>
-                                            {userData.blackList.length > 0 ? (
-                                                <p className={`${styles.generalButton} ${styles.cleanBlacklistButton}`}
-                                                   onClick={() => setModal(MODALS.IS_CLEAN_BLACKLIST)}
-                                                >
-                                                    Очистити ЧС
-                                                </p>
-                                            ) : ''}
-
                                             <p className={`${styles.generalButton} ${styles.buttonExit}`}
                                                onClick={() => setModal(MODALS.IS_EXIT)}
                                             >
@@ -519,17 +507,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     onSubmit={handleSubmit}
                     className={styles.form}
                 >
-                <textarea
-                    onKeyDown={handleKeyDown}
-                    value={newMessage}
-                    onInput={handleInput}
-                    rows={1}
-                    ref={inputRef}
-                    placeholder="Повідомлення..."
-                    className={styles.textarea}
-                    maxLength={200}
-                    disabled={!!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
-                />
+                    <textarea
+                        onKeyDown={handleKeyDown}
+                        value={newMessage}
+                        onInput={handleInput}
+                        rows={1}
+                        ref={inputRef}
+                        placeholder="Повідомлення..."
+                        className={styles.textarea}
+                        maxLength={200}
+                        disabled={!!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
+                    />
                     <button
                         disabled={!chatId || !newMessage || !!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
                         className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}

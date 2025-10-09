@@ -11,11 +11,25 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-    title: "Enónym",
-    description: "Anonymous chat for ukrainians in Denmark",
+    title: "Enonym - Анонімний чат для українців.",
+    description: "Enonym це чат для анонімного спілкування українців та нових знайомств.",
     icons: {
         icon: '/icons/favicon_icon.svg',
         apple: '/icons/favicon_icon.svg',
+    },
+    openGraph: {
+        title: "Enonym - Анонімний чат для українців.",
+        description: "Заводь нові знайомства в Enonym ",
+        url: "https://enonym.com",
+        type: "website",
+        images: [
+            {
+                url: "/images/ceo_image.png",
+                width: 950,
+                height: 950,
+                alt: "Enonym - Анонімний чат",
+            },
+        ],
     },
 };
 

@@ -70,20 +70,6 @@
             gap: 6px;
             margin-left: auto;
         }
-
-        .cleanBlacklistButton {
-            background-color: var(--transparent-orange02);
-            color: var(--error-color);
-            opacity: 0.4;
-
-            &:hover {
-                background-color: var(--transparent-orange03);
-            }
-
-            &:active {
-                opacity: 0.5;
-            }
-        }
     }
 
     .chartHistory {
