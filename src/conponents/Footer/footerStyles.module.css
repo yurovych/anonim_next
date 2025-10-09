@@ -1,32 +1,14 @@
 .footerContainer {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
     max-width: 900px;
     padding: 0 24px;
     height: 100%;
 
-    @media (max-width: 768px) {
-        flex-direction: column-reverse;
-        padding: 12px 0;
-    }
-
     .textContent {
         font-size: 14px;
         color: var(--dirty-blue);
-    }
-
-    .link {
-        text-decoration: none;
-        color: var(--dirty-blue);
-
-        &:hover {
-            text-decoration: underline;
-        }
-
-        &:active {
-            text-decoration: none;
-        }
     }
 }
