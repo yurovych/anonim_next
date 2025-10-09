@@ -12,7 +12,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
     title: "Enónym",
-    description: "Anonymous chart for ukrainians in Denmark",
+    description: "Anonymous chat for ukrainians in Denmark",
     icons: {
         icon: '/icons/favicon_icon.svg',
         apple: '/icons/favicon_icon.svg',
