@@ -191,6 +191,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
         socketInstance.on("reconnected", () => {
             setStatus('')
+            setSocket(socketInstance);
         });
         socketInstance.on("metrics", (message: {
             usersCount: number,
@@ -473,7 +474,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     </>
                 ) : (
                     <div className={styles.connectionStatus}>
-                        {chatId ? (<p className={styles.connectionText}>Втрата зв'язку, намагаюсь відновити...</p>) : (
+                        {chatId ? (
+                            <p className={styles.connectionText}>Втрата зв'язку, намагаюсь відновити...</p>
+                        ) : (
                             <p className={styles.connectionText}>
                                 {haveActiveChat ? 'У вас вже є активна сесія!' : 'Схоже немає підключення...'}
                             </p>)
@@ -501,7 +504,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         >
                             Вийти
                         </p>
-                    </div>)}
+                    </div>
+                )}
 
                 <form
                     onSubmit={handleSubmit}
