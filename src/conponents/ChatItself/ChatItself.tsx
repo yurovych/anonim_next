@@ -41,10 +41,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [matchId, setMatchId] = useState<string | null>(null);
     const [peopleInRoom, setPeopleInRoom] = useState<number>(0);
     const [haveActiveChat, setHaveActiveChat] = useState<boolean>(false);
-    const [metrics, setMetrics] = useState({
-        usersCount: 0,
-        waitingCount: 0,
-    });
+    const [metrics, setMetrics] = useState<{
+        usersCount: number,
+        waitingCount: number,
+    } | null>(null);
 
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
@@ -379,10 +379,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             {!theOneWhoLeft ? (
                                 <>
                                     <div className={styles.summarySection}>
-                                        <div className={styles.summaryMetrics}>
-                                            <p className={styles.metricsData}>Всього: {metrics.usersCount}</p>
-                                            <p className={styles.metricsData}>Очікує: {metrics.waitingCount}</p>
-                                        </div>
+                                        {metrics ? (
+                                            <div className={styles.summaryMetrics}>
+                                                <p className={styles.metricsData}>Всього: {metrics.usersCount}</p>
+                                                <p className={styles.metricsData}>Очікує: {metrics.waitingCount}</p>
+                                            </div>
+                                        ) : ''}
+
                                         <div className={styles.summaryButtons}>
                                             {userData.blackList.length > 0 ? (
                                                 <p className={`${styles.generalButton} ${styles.cleanBlacklistButton}`}
