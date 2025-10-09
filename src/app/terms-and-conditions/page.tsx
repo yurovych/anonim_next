@@ -84,10 +84,10 @@ const TermsAndConditions = () => {
                     З питаннями чи пропозиціями стосовно даного сервісу ви можете зв'язатись за
                     електронною адресою:
                 </p>
-                <a href="mailto:volodiayurovych@gmail.com"
+                <a href="mailto:enonymchat@gmail.com"
                    className={`${styles.text} ${styles.link}`}
                 >
-                    volodiayurovych@gmail.com
+                    enonymchat@gmail.com
                 </a>
             </div>
             <h3 className={styles.title}>
