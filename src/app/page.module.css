@@ -30,6 +30,10 @@
     border-top: 1px solid var(--main-gray);
     height: 32px;
     z-index: 10;
+
+    @media (max-width: 768px) {
+        height: 48px;
+    }
 }
 
 .titleBlock {

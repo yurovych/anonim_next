@@ -377,8 +377,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     <div className={styles.summarySection}>
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
-                                                <p className={styles.metricsData}>Всього: {metrics.usersCount}</p>
-                                                <p className={styles.metricsData}>Очікує: {metrics.waitingCount}</p>
+                                                <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
+                                                <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
                                             </div>
                                         ) : ''}
 
