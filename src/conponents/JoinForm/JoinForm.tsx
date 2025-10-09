@@ -229,7 +229,7 @@ const JoinForm: React.FC<JoinFormProps> = ({
                 </div>
 
                 <div className={styles.inputsBlockWrapper}>
-                    <p className={styles.inputTitle}>Віковий діапазон та стать співрозмовника</p>
+                    <p className={styles.inputTitle}>Вік та стать співрозмовника</p>
                     <div className={styles.inputsBlock}>
                         <input
                             required

@@ -376,10 +376,20 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     <div className={styles.summarySection}>
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
+                                                <div className={styles.dot}></div>
                                                 <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
                                                 <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
                                             </div>
                                         ) : ''}
+
+                                        <div className={styles.summaryMetrics}>
+                                            <p className={styles.metricsData}>
+                                                Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
+                                            </p>
+                                            <p className={styles.metricsData}>
+                                                {interlocutorData.sex === 'male' ? 'Він' : 'Вона'}: {interlocutorData.ageFrom} - {interlocutorData.ageTo}р
+                                            </p>
+                                        </div>
 
                                         <div className={styles.summaryButtons}>
                                             <p className={`${styles.generalButton} ${styles.buttonExit}`}
