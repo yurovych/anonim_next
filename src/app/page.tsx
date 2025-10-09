@@ -6,7 +6,8 @@ export default function Home() {
         <>
             <div className={styles.titleBlock}>
                 <div className={styles.titleUnderGlow}></div>
-                <h1 className={styles.title}>Вітаємо в "Enonym"</h1>
+                <h1 className={styles.title}>Enonym</h1>
+                <p className={styles.subtitle}>Анонімний чат для українців в Данії</p>
             </div>
             <MainElement/>
         </>

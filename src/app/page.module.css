@@ -30,10 +30,6 @@
     border-top: 1px solid var(--main-gray);
     height: 32px;
     z-index: 10;
-
-    @media (max-width: 768px) {
-        height: 64px;
-    }
 }
 
 .titleBlock {
@@ -49,6 +45,17 @@
 
     @media (max-width: 768px) {
         font-size: 32px;
+    }
+}
+
+.subtitle {
+    margin-top: 8px;
+    font-size: 18px;
+    text-align: center;
+    color: var(--transparent-blue);
+
+    @media (max-width: 768px) {
+        font-size: 16px;
     }
 }
 
