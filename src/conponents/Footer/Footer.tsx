@@ -13,6 +13,7 @@ const Footer = () => {
             </p>
             <a className={`${styles.textContent} ${styles.link}`}
                href={'/terms-and-conditions'}
+               target={'_blank'}
             >
                 Політика та умови
             </a>

@@ -50,6 +50,20 @@
         margin-right: 12px;
         padding-bottom: 12px;
 
+        .summaryMetrics {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+
+            .metricsData {
+                font-size: 12px;
+                text-wrap: nowrap;
+                color: var(--dirty-blue);
+                opacity: 0.5;
+            }
+        }
+
         .summaryButtons {
             display: flex;
             align-self: center;

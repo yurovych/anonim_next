@@ -40,6 +40,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [countdown, setCountdown] = useState<number>(60);
     const [matchId, setMatchId] = useState<string | null>(null);
     const [peopleInRoom, setPeopleInRoom] = useState<number>(0);
+    const [haveActiveChat, setHaveActiveChat] = useState<boolean>(false);
+    const [metrics, setMetrics] = useState({
+        usersCount: 0,
+        waitingCount: 0,
+    });
 
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
@@ -158,7 +163,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
-            console.log(usersInRoom, 'usersInRoom')
             setPeopleInRoom(usersInRoom);
             if (usersInRoom === 2) {
                 setTheOneWhoLeft('')
@@ -167,8 +171,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 setIsChatOpen(false)
             }
         });
-
-
         socketInstance.on("receive-message", (message: Message) => {
             setReceivedMessage(message)
             setIsTypingObj({
@@ -176,18 +178,24 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 isTyping: false,
             })
         });
+        socketInstance.on("have-active-chat", () => {
+            setHaveActiveChat(true);
+        });
         socketInstance.on("user-typing", (message: any) => {
             setIsTypingObj(message);
         });
-
         socketInstance.on("chat-ended", () => {
             setStatus(STATUS_WAITING)
         });
-
         socketInstance.on("reconnected", () => {
             setStatus('')
         });
-
+        socketInstance.on("metrics", (message: {
+            usersCount: number,
+            waitingCount: number,
+        }) => {
+            setMetrics(message)
+        });
         socketInstance.on("chat-left", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
             setStatus('')
@@ -290,6 +298,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     }
 
     const handleGoHome = () => {
+        if (socket) {
+            socket.emit("delete-me-from-list");
+        }
+
         if (theOneWhoLeft === userId) {
             setIsChatOpen(false)
         } else {
@@ -367,6 +379,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             {!theOneWhoLeft ? (
                                 <>
                                     <div className={styles.summarySection}>
+                                        <div className={styles.summaryMetrics}>
+                                            <p className={styles.metricsData}>Всього: {metrics.usersCount}</p>
+                                            <p className={styles.metricsData}>Очікує: {metrics.waitingCount}</p>
+                                        </div>
                                         <div className={styles.summaryButtons}>
                                             {userData.blackList.length > 0 ? (
                                                 <p className={`${styles.generalButton} ${styles.cleanBlacklistButton}`}
@@ -467,13 +483,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 ) : (
                     <div className={styles.connectionStatus}>
                         {chatId ? (<p className={styles.connectionText}>Втрата зв'язку, намагаюсь відновити...</p>) : (
-                            <p className={styles.connectionText}>Схоже немає підключення...</p>)}
-
-                        <div className={styles.connectionAnimation}>
-                            <p className={styles.connectionIcon}>🔌</p>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <p>🖥️</p>
-                        </div>
+                            <p className={styles.connectionText}>
+                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Схоже немає підключення...'}
+                            </p>)
+                        }
+                        {!haveActiveChat ? (
+                            <div className={styles.connectionAnimation}>
+                                <p className={styles.connectionIcon}>🔌</p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <p>🖥️</p>
+                            </div>
+                        ) : ''}
                         {chatId ? <p className={styles.countdown}>{countdown} сек до відключення</p> : ''}
                         {chatId && countdown < 10 ? (
                             <p className={`${styles.dontLeaveText} `}>
