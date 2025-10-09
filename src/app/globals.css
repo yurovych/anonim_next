@@ -26,6 +26,10 @@ body {
 
 body {
     background: var(--background);
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 * {

@@ -9,7 +9,7 @@ const Footer = () => {
                 volodiayurovych@gmail.com
             </a>
             <p className={styles.textContent}>
-                2025 Enónym. Copyright ©
+                2025 Enonym. Copyright ©
             </p>
         </div>
     );

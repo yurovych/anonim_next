@@ -4,6 +4,7 @@ import ChatItself from "@/conponents/ChatItself/ChatItself";
 import JoinForm from "@/conponents/JoinForm";
 import {useState, useEffect} from "react";
 import {v4 as uuidv4} from "uuid";
+import {MODALS} from "@/types/generalTypes";
 
 export interface UserData {
     age: number | null,
@@ -20,6 +21,7 @@ export interface InterlocutorData {
 const MainElement = () => {
     const [userId, setUserId] = useState<string>('');
     const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+    const [modal, setModal] = useState<MODALS>(MODALS.MODAL_OFF);
     const [userData, setUserData] = useState<UserData>({
         age: null,
         sex: '',
@@ -62,6 +64,8 @@ const MainElement = () => {
                         setUserData={setUserData}
                         setIsChatOpen={setIsChatOpen}
                         userId={userId}
+                        modal={modal}
+                        setModal={setModal}
                     />
                 )
                 : (
@@ -71,6 +75,8 @@ const MainElement = () => {
                         setUserData={setUserData}
                         setInterlocutorData={setInterlocutorData}
                         setIsChatOpen={setIsChatOpen}
+                        modal={modal}
+                        setModal={setModal}
                     />
                 )}
 

@@ -3,6 +3,8 @@
 import {useState} from 'react';
 import styles from "./joinFormStyles.module.css";
 import {InterlocutorData, UserData} from "@/conponents/MainElement/MainElement";
+import {MODALS} from "@/types/generalTypes";
+import CleanBlackListModal from "@/conponents/Modals/CleanBlackListModal";
 
 
 interface JoinFormProps {
@@ -11,6 +13,8 @@ interface JoinFormProps {
     setUserData: (userData: UserData) => void;
     setInterlocutorData: (interlocutorData: InterlocutorData) => void;
     setIsChatOpen: (isChatOpen: boolean) => void;
+    modal: MODALS;
+    setModal: (modal: MODALS) => void;
 }
 
 const JoinForm: React.FC<JoinFormProps> = ({
@@ -18,7 +22,9 @@ const JoinForm: React.FC<JoinFormProps> = ({
                                                interlocutorData,
                                                setUserData,
                                                setInterlocutorData,
-                                               setIsChatOpen
+                                               setIsChatOpen,
+                                               modal,
+                                               setModal
                                            }) => {
     const [error, setError] = useState<string>('');
 
@@ -176,108 +182,131 @@ const JoinForm: React.FC<JoinFormProps> = ({
         }
     }
 
+    const confirmCleanBlackList = () => {
+        const newUserData = {
+            ...userData,
+            blackList: []
+        }
+        setUserData(newUserData)
+        localStorage.setItem('userData', JSON.stringify(newUserData))
+        setModal(MODALS.MODAL_OFF)
+    }
+
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className={styles.form}
-        >
-            <div className={styles.inputsBlockWrapper}>
-                <p className={styles.inputTitle}>Ваш вік та стать</p>
-                <div className={styles.inputsBlock}>
-                    <input
-                        required
-                        placeholder={'Вік'}
-                        type='text'
-                        name='user-age'
-                        id='user-age'
-                        autoComplete="off"
-                        onChange={handleChangeUserAge}
-                        value={userData.age === null ? '' : userData.age}
-                        className={styles.input}
-                    />
-                    <select
-                        required
-                        className={styles.sexSelect}
-                        onChange={handleChangeUserSex}
-                        value={userData.sex}
-                    >
-                        <option value="" disabled>Cтать</option>
-                        <option value='male'>Чоловік</option>
-                        <option value='female'>Жінка</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className={styles.inputsBlockWrapper}>
-                <p className={styles.inputTitle}>Віковий діапазон та стать співрозмовника</p>
-                <div className={styles.inputsBlock}>
-                    <input
-                        required
-                        placeholder={'від'}
-                        type='text'
-                        name='user-age'
-                        id='user-age'
-                        autoComplete="off"
-                        onChange={handleChangeAgeFrom}
-                        value={interlocutorData.ageFrom === null ? '' : interlocutorData.ageFrom}
-                        className={styles.input}
-                    />
-                    <input
-                        required
-                        placeholder={'до'}
-                        type='text'
-                        name='user-age'
-                        id='user-age'
-                        autoComplete="off"
-                        onChange={handleChangeAgeTo}
-                        value={interlocutorData.ageTo === null ? '' : interlocutorData.ageTo}
-                        className={styles.input}
-                    />
-                    <select
-                        required
-                        className={styles.sexSelect}
-                        onChange={handleChangeInterlocutorSex}
-                        value={interlocutorData.sex}
-                    >
-                        <option value="" disabled>Cтать</option>
-                        <option value='male'>Чоловік</option>
-                        <option value='female'>Жінка</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className={styles.policyWrapper}>
-                <input
-                    className={styles.checkbox}
-                    id='policy_id'
-                    type={'checkbox'}
-                    name='policy_checkbox'
-                    required
-                />
-
-                <p className={styles.policyText}>
-                    <label className={styles.checkboxLabel} htmlFor={'policy_id'}>Прийняти</label>
-                    &nbsp;
-                    <a className={styles.policyLink}
-                       href={'/terms-and-conditions'}
-                    >
-                        політику та умови
-                    </a>
-                </p>
-            </div>
-
-            <div className={styles.inputsBlockWrapper}>
-                {error && <p className={styles.inputError}>{error}</p>}
-                <div className={styles.buttonContainer}>
-                    <div className={styles.buttonGlow}></div>
-                    <button className={styles.submitButton} type={'submit'}>
-                        Розпочати
-                    </button>
+        <>
+            {modal === MODALS.IS_CLEAN_BLACKLIST ?
+                <CleanBlackListModal setModal={setModal} confirm={confirmCleanBlackList}/> : ''}
+            <form
+                onSubmit={handleSubmit}
+                className={styles.form}
+            >
+                <div className={styles.inputsBlockWrapper}>
+                    <p className={styles.inputTitle}>Ваш вік та стать</p>
+                    <div className={styles.inputsBlock}>
+                        <input
+                            required
+                            placeholder={'Вік'}
+                            type='text'
+                            name='user-age'
+                            id='user-age'
+                            autoComplete="off"
+                            onChange={handleChangeUserAge}
+                            value={userData.age === null ? '' : userData.age}
+                            className={styles.input}
+                        />
+                        <select
+                            required
+                            className={styles.sexSelect}
+                            onChange={handleChangeUserSex}
+                            value={userData.sex}
+                        >
+                            <option value="" disabled>Cтать</option>
+                            <option value='male'>Чоловік</option>
+                            <option value='female'>Жінка</option>
+                        </select>
+                    </div>
                 </div>
 
-            </div>
-        </form>
+                <div className={styles.inputsBlockWrapper}>
+                    <p className={styles.inputTitle}>Віковий діапазон та стать співрозмовника</p>
+                    <div className={styles.inputsBlock}>
+                        <input
+                            required
+                            placeholder={'від'}
+                            type='text'
+                            name='user-age'
+                            id='user-age'
+                            autoComplete="off"
+                            onChange={handleChangeAgeFrom}
+                            value={interlocutorData.ageFrom === null ? '' : interlocutorData.ageFrom}
+                            className={styles.input}
+                        />
+                        <input
+                            required
+                            placeholder={'до'}
+                            type='text'
+                            name='user-age'
+                            id='user-age'
+                            autoComplete="off"
+                            onChange={handleChangeAgeTo}
+                            value={interlocutorData.ageTo === null ? '' : interlocutorData.ageTo}
+                            className={styles.input}
+                        />
+                        <select
+                            required
+                            className={styles.sexSelect}
+                            onChange={handleChangeInterlocutorSex}
+                            value={interlocutorData.sex}
+                        >
+                            <option value="" disabled>Cтать</option>
+                            <option value='male'>Чоловік</option>
+                            <option value='female'>Жінка</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.policyWrapper}>
+                    <input
+                        className={styles.checkbox}
+                        id='policy_id'
+                        type={'checkbox'}
+                        name='policy_checkbox'
+                        required
+                    />
+
+                    <p className={styles.policyText}>
+                        <label className={styles.checkboxLabel} htmlFor={'policy_id'}>Прийняти</label>
+                        &nbsp;
+                        <a className={styles.policyLink}
+                           href={'/terms-and-conditions'}
+                        >
+                            політику та умови
+                        </a>
+                    </p>
+                </div>
+
+                <div className={styles.inputsBlockWrapper}>
+                    {error && <p className={styles.inputError}>{error}</p>}
+                    <div className={styles.buttonContainer}>
+                        <div className={styles.buttonGlow}></div>
+                        <button className={styles.submitButton} type={'submit'}>
+                            Розпочати
+                        </button>
+                    </div>
+                    <div className={styles.buttonContainer}>
+                        {userData.blackList.length > 0 ? (
+                            <p className={styles.cleanBlacklistButton}
+                               onClick={() => setModal(MODALS.IS_CLEAN_BLACKLIST)}
+                            >
+                                Очистити чорний список
+                            </p>
+                        ) : ''}
+                    </div>
+                </div>
+            </form>
+        </>
+
     )
 }
 
