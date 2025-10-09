@@ -11,12 +11,6 @@ const Footer = () => {
             <p className={styles.textContent}>
                 2025 Enónym. Copyright ©
             </p>
-            <a className={`${styles.textContent} ${styles.link}`}
-               href={'/terms-and-conditions'}
-               target={'_blank'}
-            >
-                Політика та умови
-            </a>
         </div>
     );
 };
