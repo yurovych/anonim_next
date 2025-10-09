@@ -100,7 +100,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             reconnectionAttempts: 30,
             timeout: 5000,
             reconnectionDelay: 2000,
-            query: {userId: userId, isReconnect: wasConnectedBefore},
+            query: {userId: userId},
             transports: ['websocket'],
             transportOptions: {
                 websocket: {
@@ -388,7 +388,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                 Вийти
                                             </p>
                                         </div>
-
                                     </div>
                                 </>
 
@@ -523,16 +522,16 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             || !socket?.connected
                             || (!!chatId && status === STATUS_WAITING)
                             || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
+                            || (!theOneWhoLeft && !!chatId && peopleInRoom < 2)
                         }
                     />
                     <button
                         disabled={
-                            !chatId
-                            || !newMessage
-                            || !!theOneWhoLeft
+                            !!theOneWhoLeft
                             || !socket?.connected
                             || (!!chatId && status === STATUS_WAITING)
                             || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
+                            || (!theOneWhoLeft && !!chatId && peopleInRoom < 2)
                         }
                         className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
                         type={'button'}
