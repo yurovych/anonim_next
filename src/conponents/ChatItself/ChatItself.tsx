@@ -46,6 +46,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [metrics, setMetrics] = useState<{
         usersCount: number,
         waitingCount: number,
+        allUsers: number,
     } | null>(null);
 
     const typingRef = useRef<any>(null);
@@ -194,6 +195,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("metrics", (message: {
             usersCount: number,
             waitingCount: number,
+            allUsers: number,
         }) => {
             setMetrics(message)
         });
@@ -377,6 +379,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
                                                 <div className={styles.dot}></div>
+                                                <p className={styles.metricsData}>Control: {metrics.allUsers}</p>
                                                 <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
                                                 <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
                                             </div>
@@ -427,7 +430,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         {(!theOneWhoLeft && chatId && status && status === STATUS_WAITING) || (!theOneWhoLeft && chatId && peopleInRoom < 2) ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    Співрозмовник має проблеми з підключенням або покинув чат!
+                                    Схоже у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми з підключенням.
+                                    Дай {interlocutorData.sex === 'male' ? 'йому' : 'їй'} шанс!
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleGoHome}
