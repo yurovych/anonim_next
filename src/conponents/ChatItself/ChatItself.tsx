@@ -92,12 +92,15 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
 
     useEffect(() => {
+        let wasConnectedBefore = false;
+        let localChatId = '';
+
         const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
             reconnectionAttempts: 30,
             timeout: 5000,
             reconnectionDelay: 2000,
-            query: {userId: userId},
+            query: {userId: userId, isReconnect: wasConnectedBefore},
             transports: ['websocket'],
             transportOptions: {
                 websocket: {
@@ -107,10 +110,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             },
 
         });
-
-        let wasConnectedBefore = false;
-        let localChatId = '';
-
 
         socketInstance.on("connect", () => {
             setSocket(socketInstance);
@@ -191,7 +190,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
         socketInstance.on("reconnected", () => {
             setStatus('')
-            setSocket(socketInstance);
         });
         socketInstance.on("metrics", (message: {
             usersCount: number,
@@ -520,10 +518,22 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={!!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
+                        disabled={
+                            !!theOneWhoLeft
+                            || !socket?.connected
+                            || (!!chatId && status === STATUS_WAITING)
+                            || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
+                        }
                     />
                     <button
-                        disabled={!chatId || !newMessage || !!theOneWhoLeft || !socket?.connected || (!!chatId && status === STATUS_WAITING)}
+                        disabled={
+                            !chatId
+                            || !newMessage
+                            || !!theOneWhoLeft
+                            || !socket?.connected
+                            || (!!chatId && status === STATUS_WAITING)
+                            || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
+                        }
                         className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
                         type={'button'}
                         onClick={handleSubmit}
