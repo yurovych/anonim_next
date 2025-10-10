@@ -377,6 +377,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
     return (
         <>
+            {metrics ? <p className={styles.controlAllUsers}>control: {metrics.allUsers}</p> : ''}
             {modal === MODALS.IS_EXIT ? <ExitModal setModal={setModal} confirm={confirmLeaveChat}/> : ''}
             {modal === MODALS.IS_BLACKLIST ?
                 <AddToBlackListModal setModal={setModal}
@@ -392,7 +393,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
                                                 <div className={styles.dot}></div>
-                                                <p className={styles.metricsData}>Control: {metrics.allUsers}</p>
                                                 <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
                                                 <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
                                             </div>
