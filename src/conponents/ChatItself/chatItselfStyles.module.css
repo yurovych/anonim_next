@@ -1,21 +1,9 @@
 @keyframes connect {
     0% {
-        transform: translateX(5px) rotate(135deg);
-    }
-    20% {
-        transform: translateX(5px) rotate(135deg);
-    }
-    30% {
-        transform: translateX(23px) rotate(135deg);
-    }
-    70% {
-        transform: translateX(23px) rotate(135deg);
-    }
-    80% {
-        transform: translateX(5px) rotate(135deg);
+        transform: rotate(0deg);
     }
     100% {
-        transform: translateX(5px) rotate(135deg);
+        transform: rotate(360deg);
     }
 }
 
@@ -299,8 +287,8 @@
     font-weight: 400;
     color: var(--dirty-blue);
     position: absolute;
-    left: 22px;
-    bottom: 60px;
+    left: 12px;
+    bottom: 64px;
 }
 
 .leftChatBlock {
@@ -317,6 +305,12 @@
         font-size: 16px;
         font-weight: 400;
         color: var(--dirty-blue);
+    }
+
+    .leftChatTextSecondary {
+        font-size: 14px;
+        color: var(--main-gray);
+        text-align: center;
     }
 
     .endChatButtons {
