@@ -120,6 +120,7 @@
             color: var(--text-main);
             word-break: break-all;
             overflow-wrap: break-word;
+            white-space: pre-line;
 
             @media (max-width: 768px) {
                 font-size: 16px;

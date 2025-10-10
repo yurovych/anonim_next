@@ -222,17 +222,19 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         if (!newMessage || !chatId) return
         const createdAt = new Date().getTime();
 
-        setMessages((prev) => [...prev, {
-            uId: userId,
-            message: newMessage,
-            createdAt: createdAt,
-            pending: true,
-        }])
+        if (newMessage.trim()) {
+            setMessages((prev) => [...prev, {
+                uId: userId,
+                message: newMessage.trim(),
+                createdAt: createdAt,
+                pending: true,
+            }])
+        }
 
         if (socket && newMessage.trim()) {
             socket.emit("send-message", {
                 uId: userId,
-                message: newMessage,
+                message: newMessage.trim(),
                 createdAt: createdAt,
                 pending: true,
                 chatId: chatId,
@@ -419,7 +421,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         </div>
 
-                        {status && reason && reason.userId !== userId && !DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) ? (
+                        {!status && reason && reason.userId !== userId && !DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     Схоже у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми з
