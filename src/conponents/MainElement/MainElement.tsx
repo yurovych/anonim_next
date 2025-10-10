@@ -51,6 +51,7 @@ const MainElement = () => {
         } else {
             const id = uuidv4();
             setUserId(id);
+            localStorage.setItem('userId', id);
         }
     }, [])
 
