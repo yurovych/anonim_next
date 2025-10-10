@@ -391,3 +391,23 @@
     background-color: var(--main-red);
     animation: pulse 4s infinite;
 }
+
+.controlAllUsers {
+    position: fixed;
+    bottom: 32px;
+    right: 12px;
+    z-index: 11;
+    font-size: 12px;
+    text-wrap: nowrap;
+    color: var(--dirty-blue);
+    opacity: 0;
+
+    @media (max-width: 768px) {
+        bottom: 48px;
+    }
+
+    &:hover {
+        cursor: default;
+        opacity: 0.3;
+    }
+}
