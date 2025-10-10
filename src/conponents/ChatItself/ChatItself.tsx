@@ -1,6 +1,7 @@
 'use client'
 
 import {
+    useCallback,
     useEffect, useRef, useState
 } from 'react';
 import styles from './chatItselfStyles.module.css';
@@ -137,7 +138,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setSocket(null);
             clearInterval(intervalRef.current)
 
-            if (countdown > 0) {
+            if (countdown > 0 && localChatId) {
                 intervalRef.current = setInterval(() => {
                     setCountdown((prev) => {
                         if (prev > 0) {
@@ -216,7 +217,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         };
     }, []);
 
-    const handleIsTyping = debounce(() => {
+    const handleIsTyping = useCallback(debounce(() => {
         if (socket) {
             socket.emit("is-typing", {
                 uId: userId,
@@ -224,11 +225,18 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 chatId: chatId,
             });
         }
-    }, 300)
+    }, 500), [socket, userId, chatId]);
+
+    useEffect(() => {
+        return () => {
+            handleIsTyping.cancel();
+        };
+    }, []);
+
 
     const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewMessage(event.target.value);
-        handleIsTyping();
+        handleIsTyping()
     };
 
     const handleSubmit = () => {
@@ -279,6 +287,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 chatId: chatId,
             });
         }
+
+        if (!chatId) {
+            setIsChatOpen(false)
+            setModal(MODALS.MODAL_OFF);
+        }
     }
 
     const confirmAddToBlackList = () => {
@@ -317,13 +330,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const handleNewChat = () => {
         setTheOneWhoLeft('');
         setMessages([]);
-        setChatId(null)
         setMatchId(null)
         if (socket) {
             socket.emit("find-chat", {
                 uId: userId,
                 userData,
-                interlocutorData
+                interlocutorData,
+                leftPrevious: !!theOneWhoLeft,
             });
         }
     }
