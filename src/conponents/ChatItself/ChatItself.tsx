@@ -160,9 +160,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             })
         });
         socketInstance.on("disconnect_reason", (message: { reason: string, userId: string }) => {
-            if (status !== STATUS_CONNECTED) {
-                setReason(message)
-            }
+            setReason(message)
+            setStatus('')
         });
         socketInstance.on("have-active-chat", () => {
             setHaveActiveChat(true);
@@ -420,7 +419,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         </div>
 
-                        {reason && !DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) ? (
+                        {status && reason && reason.userId !== userId && !DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     Схоже у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми з
@@ -519,23 +518,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={
-                            !!reason
-                            || !!theOneWhoLeft
-                            || !socket?.connected
-                            || (!!chatId && status === STATUS_WAITING)
-                            || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
-                        }
+                        disabled={status !== STATUS_CONNECTED || !socket?.connected}
                     />
                     <button
-                        disabled={
-                            !!reason
-                            || !!theOneWhoLeft
-                            || !socket?.connected
-                            || (!!chatId && status === STATUS_WAITING)
-                            || (!theOneWhoLeft && !!chatId && !!status && status === STATUS_WAITING)
-                        }
-                        className={`${!chatId || !newMessage || !!theOneWhoLeft ? styles.disabledButton : ''} ${styles.sendButton}`}
+                        disabled={status !== STATUS_CONNECTED || !socket?.connected}
+                        className={`${status !== STATUS_CONNECTED || !socket?.connected || (chatId && !newMessage)
+                            ? styles.disabledButton
+                            : ''
+                        } ${styles.sendButton}`}
                         type={'button'}
                         onClick={handleSubmit}
                     >
