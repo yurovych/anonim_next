@@ -49,7 +49,7 @@
     border: 1px solid var(--main-gray);
     border-radius: 12px;
     margin-top: 32px;
-    padding: 12px 0 12px 12px;
+    padding: 12px 12px 12px 12px;
     background-color: var(--background);
 
     @media (max-width: 768px) {
@@ -72,7 +72,6 @@
         height: 48px;
         min-height: 48px;
         border-bottom: 1px solid var(--main-gray);
-        margin-right: 12px;
         padding-bottom: 12px;
 
         .summaryMetrics {
@@ -114,7 +113,7 @@
             cursor: pointer;
             border-radius: 4px;
             transition: all 0.3s ease-in-out;
-            background-color: var(--transparent-gray);
+            background-color: var(--transparent-gray02);
         }
 
         &::-webkit-scrollbar-thumb:hover {
@@ -138,6 +137,9 @@
             }
         }
 
+        .pendingMessage {
+            opacity: 0.3;
+        }
 
         .messageTime {
             font-size: 14px;
@@ -171,7 +173,7 @@
     }
 
     &:active {
-        background-color: var(--transparent-gray);
+        background-color: var(--transparent-gray02);
     }
 }
 
@@ -204,7 +206,7 @@
 
 .myChartElement {
     align-items: flex-end;
-    background-color: var(--transparent-gray);
+    background-color: var(--transparent-gray01);
     align-self: flex-end;
     border-radius: 12px 12px 0 12px;
 }
@@ -222,7 +224,6 @@
     width: 100%;
     height: 48px;
     margin-top: 32px;
-    padding-right: 12px;
 }
 
 .sendButton {
@@ -248,11 +249,11 @@
 
     &:hover {
         cursor: pointer;
-        background-color: var(--transparent-gray);
+        background-color: var(--transparent-gray02);
     }
 
     &:active {
-        background-color: var(--transparent-gray);
+        background-color: var(--transparent-gray02);
     }
 }
 
@@ -274,7 +275,7 @@
     height: 100%;
     background-color: var(--background);
     border-radius: 12px;
-    border: 1px solid var(--transparent-gray);
+    border: 1px solid var(--transparent-gray02);
     outline: none;
     color: var(--text-main);
     padding: 12px 10px;

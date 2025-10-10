@@ -68,7 +68,7 @@
                 }
 
                 &:active {
-                    background-color: var(--transparent-gray);
+                    background-color: var(--transparent-gray02);
                 }
             }
         }

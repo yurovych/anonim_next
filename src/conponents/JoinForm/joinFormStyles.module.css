@@ -71,7 +71,7 @@
     background-color: var(--background);
     color: var(--text-main);
     border-radius: 12px;
-    border: 1px solid var(--transparent-gray);
+    border: 1px solid var(--transparent-gray02);
     outline: none;
     padding: 0 10px;
 
