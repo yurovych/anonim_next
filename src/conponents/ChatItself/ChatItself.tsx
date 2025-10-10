@@ -218,7 +218,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     }, []);
 
     const handleIsTyping = useCallback(debounce(() => {
-        if (socket) {
+        if (socket && newMessage) {
             socket.emit("is-typing", {
                 uId: userId,
                 isTyping: true,
