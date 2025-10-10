@@ -403,7 +403,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                 Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
                                             </p>
                                             <p className={styles.metricsData}>
-                                                {interlocutorData.sex === 'male' ? 'Він' : 'Вона'}: {interlocutorData.ageFrom} - {interlocutorData.ageTo}р
+                                                {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
+                                                від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
                                             </p>
                                         </div>
 
