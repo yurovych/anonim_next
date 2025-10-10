@@ -415,7 +415,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         }
                                         key={item.createdAt + item.message + index}
                                     >
-                                        <p className={styles.messageText}>{item.message}</p>
+                                        <p className={`${styles.messageText} ${item.pending ? styles.pendingMessage : ''}`}>{item.message}</p>
                                         <p className={styles.messageTime}>
                                             {item.pending
                                                 ? 'Надсилання...'
@@ -431,7 +431,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     Схоже у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми з підключенням.
-                                    Дай {interlocutorData.sex === 'male' ? 'йому' : 'їй'} шанс!
+                                    Або {interlocutorData.sex === 'male' ? 'він' : 'вона'} {interlocutorData.sex === 'male' ? 'залишив' : 'залишила'} чат.
+                                </p>
+                                <p className={styles.leftChatText}>
+                                    Спробуй трохи зачекати.
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleGoHome}

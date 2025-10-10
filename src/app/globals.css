@@ -7,7 +7,8 @@
     --error-color: #FEB21A;
     --transparent-orange02: rgba(255, 166, 0, 0.2);
     --transparent-orange03: rgba(255, 166, 0, 0.3);
-    --transparent-gray: rgba(128, 128, 128, 0.2);
+    --transparent-gray02: rgba(128, 128, 128, 0.2);
+    --transparent-gray01: rgba(128, 128, 128, 0.1);
     --transparent-blue: rgba(118, 171, 174, 0.2);
     --transparent-red02: rgba(139, 0, 0, 0.2);
     --transparent-red04: rgba(139, 0, 0, 0.4);
@@ -52,7 +53,7 @@ input {
     height: 100%;
     background-color: var(--background);
     border-radius: 12px;
-    border: 1px solid var(--transparent-gray);
+    border: 1px solid var(--transparent-gray02);
     outline: none;
     color: var(--text-main);
     padding: 0 10px;
