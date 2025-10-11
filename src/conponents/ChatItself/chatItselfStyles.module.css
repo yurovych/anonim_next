@@ -9,19 +9,19 @@
 
 @keyframes pulse {
     0% {
-        transform: scale(1);
-    }
-    35% {
-        transform: scale(1);
-    }
-    50% {
         transform: scale(2);
     }
-    65% {
-        transform: scale(1);
+    40% {
+        transform: scale(2);
+    }
+    50% {
+        transform: scale(0.5);
+    }
+    60% {
+        transform: scale(2);
     }
     100% {
-        transform: scale(1);
+        transform: scale(2);
     }
 }
 
@@ -44,6 +44,32 @@
         max-height: calc(100vh - 32px - 64px - 24px - 72px);
         margin-top: 24px;
     }
+
+    .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--main-gray);
+        padding-bottom: 4px;
+
+        .statusDot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            /*opacity: 0.5;*/
+            background-color: var(--dirty-blue);
+            animation: pulse 4s infinite;
+        }
+
+        .statusValue {
+            font-size: 12px;
+            text-wrap: nowrap;
+            color: var(--text-main);
+            opacity: 0.6;
+        }
+    }
+
+
 }
 
 .chartHistoryWrapper {
@@ -61,10 +87,9 @@
         height: 48px;
         min-height: 48px;
         border-bottom: 1px solid var(--main-gray);
-        padding-bottom: 12px;
+        padding: 12px 0;
 
         .summaryMetrics {
-            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -375,18 +400,6 @@
         font-size: 14px;
         color: var(--dirty-blue)
     }
-}
-
-.dot {
-    position: absolute;
-    left: -5px;
-    top: -5px;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    opacity: 0.5;
-    background-color: var(--main-red);
-    animation: pulse 4s infinite;
 }
 
 .controlAllUsers {

@@ -32,12 +32,19 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                    modal,
                                                    setModal
                                                }) => {
+    const statusType = {
+        waiting: `Очікуємо...`,
+        connected: `З'єднано`,
+        reconnected: `З'єднання відновлено!`,
+        disconnected: `Немає з'єднання`
+    }
+
     const [socket, setSocket] = useState<Socket | null>(null);
     const [newMessage, setNewMessage] = useState<string>('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTypingObj, setIsTypingObj] = useState<{ isTyping: boolean, uId: string }>({isTyping: false, uId: ''});
     const [receivedMessage, setReceivedMessage] = useState<Message | null>(null)
-    const [status, setStatus] = useState<string>('');
+    const [status, setStatus] = useState<string>(statusType.disconnected);
     const [chatId, setChatId] = useState<string | null>(null);
     const [theOneWhoLeft, setTheOneWhoLeft] = useState<string>('');
     const [matchId, setMatchId] = useState<string | null>(null);
@@ -56,11 +63,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const intervalRef = useRef<any>(null);
     const inputRef = useRef<any>(null);
 
-    const STATUS_WAITING = `Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`;
-    const STATUS_CONNECTED = "З'єднано";
-    const STATUS_RECONNECTED = "З'єднання відновлено!"
 
-    const DISCONNECT_ON_PURPOSE_REASONS = ['server namespace disconnect', 'client namespace disconnect', 'forced close', 'transport close']
+    const DISCONNECT_ON_PURPOSE_REASONS = ['server namespace disconnect', 'client namespace disconnect', 'forced close']
     const DISCONNECT_TRANSPORT_CLOSE = 'transport close'
 
     useEffect(() => {
@@ -137,21 +141,18 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 isReconnected = false;
             } else {
                 setSocket(null);
-                setStatus('');
+                setStatus(statusType.disconnected);
             }
-
         });
 
         socketInstance.on("disconnect_reason", (message: {
             reason: string,
             userId: string,
         }) => {
-            if (isReconnected && socketInstance?.connected) {
-                isReconnected = false;
-            } else {
-                setReason(message)
-                setStatus('');
+            if (!isReconnected) {
+                setStatus(statusType.disconnected);
             }
+            setReason(message)
         });
 
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
@@ -159,11 +160,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             localChatId = chatId;
             setChatId(chatId);
             setMatchId(userId === seekerId ? matchId : seekerId);
-            setStatus(STATUS_CONNECTED);
+            setStatus(statusType.connected);
         });
 
         socketInstance.on("waiting-for-match", () => {
-            setStatus(STATUS_WAITING);
+            setStatus(statusType.waiting);
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
@@ -187,7 +188,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setIsTypingObj(message);
         });
         socketInstance.on("reconnected", () => {
-            setStatus(STATUS_RECONNECTED)
+            setStatus(statusType.reconnected);
             setReason(null)
             isReconnected = true;
         });
@@ -200,7 +201,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
         socketInstance.on("chat-left", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
-            setStatus('')
+            setStatus(statusType.disconnected)
             setModal(MODALS.MODAL_OFF);
             setChatId(null)
             localChatId = ''
@@ -374,6 +375,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         )
     }
 
+    const getStatusColor = () => {
+        switch (status) {
+            case statusType.waiting:
+                return '#76ABAE'
+            case statusType.disconnected:
+                return '#C62300'
+            default:
+                return '#228B22'
+        }
+    }
+
     return (
         <>
             {metrics ? <p className={styles.controlAllUsers}>control: {metrics.allUsers}</p> : ''}
@@ -382,174 +394,170 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 <AddToBlackListModal setModal={setModal}
                                      confirm={confirmAddToBlackList}/> : ''}
 
-                <div className={styles.chart}>
-                    <p style={{fontSize: '10px'}}>{`Status_${status}`}</p>
-                    <p style={{fontSize: '10px'}}>{`TheOneWhoLeft_${theOneWhoLeft}`}</p>
-                    <p style={{fontSize: '10px'}}>{`Reason_${reason?.reason}`}</p>
-                    {socket?.connected ? (
-                        <>
-                            <div className={styles.chartHistoryWrapper}>
-                                {!theOneWhoLeft && !reason ? (
-                                    <>
-                                        <div className={styles.summarySection}>
-                                            {metrics ? (
-                                                <div className={styles.summaryMetrics}>
-                                                    <div className={styles.dot}></div>
-                                                    <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
-                                                    <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
-                                                </div>
-                                            ) : ''}
+            <div className={styles.chart}>
+                <div className={styles.status}>
+                    <div className={styles.statusDot} style={{backgroundColor: getStatusColor()}}></div>
+                    <p className={styles.statusValue}>{`Статус: ${status}`}</p>
+                </div>
 
+                {socket?.connected ? (
+                    <>
+                        <div className={styles.chartHistoryWrapper}>
+                            {!theOneWhoLeft && status !== statusType.disconnected ? (
+                                <>
+                                    <div className={styles.summarySection}>
+                                        {metrics ? (
                                             <div className={styles.summaryMetrics}>
-                                                <p className={styles.metricsData}>
-                                                    Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
-                                                </p>
-                                                <p className={styles.metricsData}>
-                                                    {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
-                                                    від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
-                                                </p>
+                                                <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
+                                                <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
                                             </div>
+                                        ) : ''}
 
-                                            <div className={styles.summaryButtons}>
-                                                <p className={`${styles.generalButton} ${styles.buttonExit}`}
-                                                   onClick={() => setModal(MODALS.IS_EXIT)}
-                                                >
-                                                    Вийти
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </>
-
-                                ) : ''}
-                                <div className={styles.chartHistory} ref={historyRef}>
-                                    {messages.map((item, index) => (
-                                        <div
-                                            className={
-                                                `${userId === item.uId
-                                                    ? styles.myChartElement
-                                                    : styles.anonymChartElement} ${styles.chartElement}`
-                                            }
-                                            key={item.createdAt + item.message + index}
-                                        >
-                                            <p className={`${styles.messageText} ${item.pending ? styles.pendingMessage : ''}`}>{item.message}</p>
-                                            <p className={styles.messageTime}>
-                                                {item.pending
-                                                    ? 'Надсилання...'
-                                                    : format(new Date(item.createdAt), 'HH:mm')
-                                                }
+                                        <div className={styles.summaryMetrics}>
+                                            <p className={styles.metricsData}>
+                                                Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
+                                            </p>
+                                            <p className={styles.metricsData}>
+                                                {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
+                                                від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
                                             </p>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        <div className={styles.summaryButtons}>
+                                            <p className={`${styles.generalButton} ${styles.buttonExit}`}
+                                               onClick={() => setModal(MODALS.IS_EXIT)}
+                                            >
+                                                Вийти
+                                            </p>
+                                        </div>
+                                    </div>
+                                </>
+
+                            ) : ''}
+                            <div className={styles.chartHistory} ref={historyRef}>
+                                {messages.map((item, index) => (
+                                    <div
+                                        className={
+                                            `${userId === item.uId
+                                                ? styles.myChartElement
+                                                : styles.anonymChartElement} ${styles.chartElement}`
+                                        }
+                                        key={item.createdAt + item.message + index}
+                                    >
+                                        <p className={`${styles.messageText} ${item.pending ? styles.pendingMessage : ''}`}>{item.message}</p>
+                                        <p className={styles.messageTime}>
+                                            {item.pending
+                                                ? 'Надсилання...'
+                                                : format(new Date(item.createdAt), 'HH:mm')
+                                            }
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
-
-                            {peopleInChat < 2 && !reason && status === STATUS_RECONNECTED ? (
-                                <div className={styles.leftChatBlock}>
-                                    <p className={styles.leftChatText}>
-                                        Нажаль {interlocutorData.sex === 'male' ? 'він покинув' : 'вона покинула'} чат
-                                    </p>
-                                    <div className={styles.endChatButtons}>
-                                        <p onClick={handleGoHome}
-                                           className={`${styles.generalButton} ${styles.chatEndButton}`}
-                                        >
-                                            На головну
-                                        </p>
-                                    </div>
-                                    {getAddToBlackListElement()}
-                                </div>
-                            ) : ''}
-
-                            {!theOneWhoLeft && !status && reason && reason.userId !== userId && !DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) ? (
-                                <div className={styles.leftChatBlock}>
-                                    <p className={styles.leftChatText}>
-                                        Схоже у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми зі
-                                        зв'язком.
-                                    </p>
-                                    <p className={styles.leftChatTextSecondary}>
-                                        Спробуй трохи зачекати.
-                                    </p>
-                                    <div className={styles.endChatButtons}>
-                                        <p onClick={handleGoHome}
-                                           className={`${styles.generalButton} ${styles.chatEndButton}`}
-                                        >
-                                            На головну
-                                        </p>
-                                    </div>
-                                    {getAddToBlackListElement()}
-                                </div>
-                            ) : ''}
-
-                            {theOneWhoLeft || (reason && DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)) ? (
-                                <div className={styles.leftChatBlock}>
-                                    <p className={styles.leftChatText}>
-                                        {theOneWhoLeft && theOneWhoLeft === userId ? 'Ви покинули чат' : ''}
-                                        {theOneWhoLeft && theOneWhoLeft !== userId ? 'Нажаль співрозмовник покинув чат!' : ''}
-                                        {!theOneWhoLeft && reason && reason.userId === userId ? `Ви покинули чат` : ''}
-                                        {!theOneWhoLeft && reason && reason.userId !== userId && reason.reason === DISCONNECT_TRANSPORT_CLOSE ? `Хм...тут щось не зрозуміле, ${interlocutorData.sex === 'male'
-                                            ? 'він покнув'
-                                            : 'вона покинула'} чат або просто проблеми зі звʼязком` : ''}
-                                        {!theOneWhoLeft && reason && reason.userId !== userId && reason.reason !== DISCONNECT_TRANSPORT_CLOSE ? `Нажаль співрозмовник покинув чат!` : ''}
-                                    </p>
-                                    <div className={styles.endChatButtons}>
-                                        <p onClick={handleNewChat}
-                                           className={`${styles.generalButton} ${styles.chatEndButton}`}
-                                        >
-                                            Пошук
-                                        </p>
-                                        <p onClick={handleGoHome}
-                                           className={`${styles.generalButton} ${styles.chatEndButton}`}
-                                        >
-                                            На головну
-                                        </p>
-                                    </div>
-                                    {getAddToBlackListElement()}
-                                </div>
-                            ) : ''}
-
-                            {isTypingObj.isTyping && isTypingObj.uId !== userId && socket.connected
-                                ? <p className={styles.isTyping}>
-                                    Щось тобі пишe... 🖊️
-                                </p>
-                                : ''
-                            }
-                            {
-                                status &&
-                                messages.length === 0 &&
-                                socket.connected &&
-                                !isTypingObj.isTyping &&
-                                !theOneWhoLeft &&
-                                !reason
-                                    ? <p className={styles.isTyping}>
-                                        {status}
-                                    </p> : ''
-                            }
-                        </>
-                    ) : (
-                        <div className={styles.connectionStatus}>
-                            {chatId ? (
-                                <p className={styles.connectionText}>Не підключено...</p>
-                            ) : (
-                                <p className={styles.connectionText}>
-                                    {haveActiveChat ? 'У вас вже є активна сесія!' : 'Не підкючено...'}
-                                </p>)
-                            }
-                            {!haveActiveChat ? (
-                                <div className={styles.connectionAnimation}>
-                                    <p className={styles.connectionIcon}>⚙️</p>
-                                </div>
-                            ) : ''}
-                            <p className={`${styles.generalButton} ${styles.buttonExit}`}
-                               onClick={handleExitOnDisconnect}
-                            >
-                                Вийти
-                            </p>
                         </div>
-                    )}
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className={styles.form}
-                    >
+                        {!theOneWhoLeft && peopleInChat < 2 && status === statusType.reconnected && !reason ? (
+                            <div className={styles.leftChatBlock}>
+                                <p className={styles.leftChatText}>
+                                    Схоже що ти тут сам... 😔
+                                </p>
+                                <div className={styles.endChatButtons}>
+                                    <p onClick={handleGoHome}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        На головну
+                                    </p>
+                                </div>
+                                {getAddToBlackListElement()}
+                            </div>
+                        ) : ''}
+
+                        {theOneWhoLeft ? (
+                            <div className={styles.leftChatBlock}>
+                                <p className={styles.leftChatText}>
+                                    {theOneWhoLeft === userId ? 'Ви покинули чат' : 'Нажаль співрозмовник покинув чат!'}
+                                </p>
+                                <div className={styles.endChatButtons}>
+                                    <p onClick={handleNewChat}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        Пошук
+                                    </p>
+                                    <p onClick={handleGoHome}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        На головну
+                                    </p>
+                                </div>
+                                {getAddToBlackListElement()}
+                            </div>
+                        ) : ''}
+
+                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason ? (
+                            <div className={styles.leftChatBlock}>
+                                <p className={styles.leftChatText}>
+                                    {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
+                                        ? userId === reason.userId
+                                            ? 'Ви покинули чат'
+                                            : 'Нажаль співрозмовник покинув чат!'
+                                        : ''
+                                    }
+
+                                    {DISCONNECT_TRANSPORT_CLOSE === reason.reason
+                                        ? userId === reason.userId
+                                            ? 'Ви відключились'
+                                            : 'Співрозмовник кудись зник, спробуйте зачекати...'
+                                        : ''}
+
+                                    {!DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) && DISCONNECT_TRANSPORT_CLOSE !== reason.reason
+                                        ? `Схоже у ${interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми зі зв'язком. Спробуйте трохи зачекати.`
+                                        : ''
+                                    }
+                                </p>
+                                <div className={styles.endChatButtons}>
+                                    <p onClick={handleGoHome}
+                                       className={`${styles.generalButton} ${styles.chatEndButton}`}
+                                    >
+                                        На головну
+                                    </p>
+                                </div>
+                                {getAddToBlackListElement()}
+                            </div>
+                        ) : ''}
+
+                        {isTypingObj.isTyping && isTypingObj.uId !== userId && socket.connected
+                            ? <p className={styles.isTyping}>
+                                Щось тобі пишe... 🖊️
+                            </p>
+                            : ''
+                        }
+                    </>
+                ) : (
+                    <div className={styles.connectionStatus}>
+                        {chatId ? (
+                            <p className={styles.connectionText}>Не підключено...</p>
+                        ) : (
+                            <p className={styles.connectionText}>
+                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Не підкючено...'}
+                            </p>)
+                        }
+                        {!haveActiveChat ? (
+                            <div className={styles.connectionAnimation}>
+                                <p className={styles.connectionIcon}>⚙️</p>
+                            </div>
+                        ) : ''}
+                        <p className={`${styles.generalButton} ${styles.buttonExit}`}
+                           onClick={handleExitOnDisconnect}
+                        >
+                            Вийти
+                        </p>
+                    </div>
+                )}
+
+                <form
+                    onSubmit={handleSubmit}
+                    className={styles.form}
+                >
                     <textarea
                         onKeyDown={handleKeyDown}
                         value={newMessage}
@@ -559,21 +567,21 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected || peopleInChat < 2}
+                        disabled={status === statusType.disconnected || !socket?.connected || peopleInChat < 2}
                     />
-                        <button
-                            disabled={!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected || (!!chatId && !newMessage) || peopleInChat < 2}
-                            className={`${!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected || (!!chatId && !newMessage || peopleInChat < 2)
-                                ? styles.disabledButton
-                                : ''
-                            } ${styles.sendButton}`}
-                            type={'button'}
-                            onClick={handleSubmit}
-                        >
-                            <img src="/icons/send_icon.svg" alt="send"/>
-                        </button>
-                    </form>
-                </div>
+                    <button
+                        disabled={status === statusType.disconnected || !socket?.connected || peopleInChat < 2 || !newMessage}
+                        className={`${status === statusType.disconnected || !socket?.connected || peopleInChat < 2 || !newMessage
+                            ? styles.disabledButton
+                            : ''
+                        } ${styles.sendButton}`}
+                        type={'button'}
+                        onClick={handleSubmit}
+                    >
+                        <img src="/icons/send_icon.svg" alt="send"/>
+                    </button>
+                </form>
+            </div>
         </>
 
     )
