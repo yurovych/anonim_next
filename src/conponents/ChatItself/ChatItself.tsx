@@ -132,6 +132,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("disconnect", () => {
+            if (status === STATUS_RECONNECTED) return
             setSocket(null);
             setStatus('');
         });
