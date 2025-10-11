@@ -497,21 +497,16 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 ) : (
                     <div className={styles.connectionStatus}>
                         {chatId ? (
-                            <p className={styles.connectionText}>Перевір інтернет підключення...</p>
+                            <p className={styles.connectionText}>Не підкючено...</p>
                         ) : (
                             <p className={styles.connectionText}>
-                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Схоже немає підключення...'}
+                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Не підкючено...'}
                             </p>)
                         }
                         {!haveActiveChat ? (
                             <div className={styles.connectionAnimation}>
                                 <p className={styles.connectionIcon}>⚙️</p>
                             </div>
-                        ) : ''}
-                        {chatId ? (
-                            <p className={`${styles.dontLeaveText} `}>
-                                Намагаюсь відновити. Не залишай чат щоб не втратити співрозмовника.
-                            </p>
                         ) : ''}
                         <p className={`${styles.generalButton} ${styles.buttonExit}`}
                            onClick={handleExitOnDisconnect}
