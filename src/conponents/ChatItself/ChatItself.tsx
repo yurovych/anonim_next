@@ -167,7 +167,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         }) => {
             if (!isReconnected) {
                 setStatus(statusType.disconnected);
+                isDisconnected = true;
+            } else {
+                isReconnected = false;
             }
+
             setReason(message)
         });
 
