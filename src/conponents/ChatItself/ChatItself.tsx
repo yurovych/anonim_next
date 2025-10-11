@@ -37,7 +37,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         connected: `З'єднано`,
         reconnected: `З'єднання відновлено!`,
         reconnectingProcess: 'Перепідключення',
-        disconnected: `Немає зв'язку зі співрозмовником`
+        disconnected: `Немає зв'язку зі ${interlocutorData.sex === 'male' ? 'співрозмовником' : 'співрозмовницею'}`,
     }
 
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -502,7 +502,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         {theOneWhoLeft && peopleInChat < 2 ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    {theOneWhoLeft === userId ? 'Ви покинули чат' : 'Нажаль співрозмовник покинув чат!'}
+                                    {theOneWhoLeft === userId ? 'Ви покинули чат' : `Нажаль ${interlocutorData.sex === 'male' ? 'співрозмовник покинув' : 'співрозмовниця покинула'} чат!`}
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
@@ -522,25 +522,47 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
                         {status === statusType.disconnected && !theOneWhoLeft && reason ? (
                             <div className={styles.leftChatBlock}>
-                                <p className={styles.leftChatText}>
-                                    {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
-                                        ? userId === reason.userId
-                                            ? 'Ви покинули чат'
-                                            : 'Нажаль співрозмовник покинув чат!'
-                                        : ''
-                                    }
 
-                                    {DISCONNECT_TRANSPORT_CLOSE === reason.reason
-                                        ? userId === reason.userId
-                                            ? 'Ви відключились'
-                                            : 'Співрозмовник кудись зник, спробуйте зачекати...'
-                                        : ''}
+                                {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
+                                    ? userId === reason.userId
+                                        ? <p className={styles.leftChatText}>
+                                            Ви покинули чат
+                                        </p>
+                                        : <p className={styles.leftChatText}>
+                                            Нажаль співрозмовник покинув чат!
+                                        </p>
+                                    : ''
+                                }
 
-                                    {!DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) && DISCONNECT_TRANSPORT_CLOSE !== reason.reason
-                                        ? `Схоже у ${interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми зі зв'язком. Спробуйте трохи зачекати.`
-                                        : ''
-                                    }
-                                </p>
+                                {DISCONNECT_TRANSPORT_CLOSE === reason.reason
+                                    ? userId === reason.userId
+                                        ? <p className={styles.leftChatText}>Ви відключились</p>
+                                        : (
+                                            <div>
+                                                <p className={styles.leftChatText}>🤔</p>
+                                                <p className={styles.leftChatText}>`${interlocutorData.sex === 'male' ? 'Співрозмовник кудись зник' : 'Співрозмовниця кудись зникла'}`</p>
+                                                <p className={styles.leftChatText}>Пропоную трохи зачекати</p>
+                                            </div>
+
+                                        )
+                                    : ''}
+
+                                {!DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason) && DISCONNECT_TRANSPORT_CLOSE !== reason.reason
+                                    ? (
+                                        <div>
+                                            <p className={styles.leftChatText}>🤔</p>
+                                            <p className={styles.leftChatText}>Схоже
+                                                у {interlocutorData.sex === 'male' ? 'нього' : 'неї'} проблеми зі
+                                                зв'язком.
+                                            </p>
+                                            <p className={styles.leftChatText}>
+                                                Пропоную трохи зачекати
+                                            </p>
+                                        </div>
+                                    )
+                                    : ''
+                                }
+
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleGoHome}
                                        className={`${styles.generalButton} ${styles.chatEndButton}`}
