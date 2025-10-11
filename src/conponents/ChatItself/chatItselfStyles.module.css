@@ -251,6 +251,7 @@
     opacity: 0.4;
 
     &:hover {
+        background-color: var(--transparent-blue);
         color: var(--text-main);
         cursor: default;
     }

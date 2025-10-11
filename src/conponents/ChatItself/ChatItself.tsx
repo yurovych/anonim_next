@@ -368,6 +368,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                      confirm={confirmAddToBlackList}/> : ''}
 
             <div className={styles.chart}>
+                <p style={{fontSize: '10px'}}>{`Status_${status}`}</p>
+                <p style={{fontSize: '10px'}}>{`TheOneWhoLeft_${theOneWhoLeft}`}</p>
+                <p style={{fontSize: '10px'}}>{`Reason_${reason?.reason}`}</p>
                 {socket?.connected ? (
                     <>
                         <div className={styles.chartHistoryWrapper}>
@@ -404,9 +407,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
                             ) : ''}
                             <div className={styles.chartHistory} ref={historyRef}>
-                                {/*<p style={{fontSize: '10px'}}>{`Status_${status}`}</p>*/}
-                                {/*<p style={{fontSize: '10px'}}>{`TheOneWhoLeft_${theOneWhoLeft}`}</p>*/}
-                                {/*<p style={{fontSize: '10px'}}>{`Reason_${reason?.reason}`}</p>*/}
                                 {messages.map((item, index) => (
                                     <div
                                         className={
@@ -527,11 +527,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={status !== STATUS_CONNECTED || !socket?.connected}
+                        disabled={!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected}
                     />
                     <button
-                        disabled={status !== STATUS_CONNECTED || !socket?.connected}
-                        className={`${status !== STATUS_CONNECTED || !socket?.connected || (chatId && !newMessage)
+                        disabled={!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected || (!!chatId && !newMessage)}
+                        className={`${!(status === STATUS_CONNECTED || status === STATUS_RECONNECTED) || !socket?.connected || (!!chatId && !newMessage)
                             ? styles.disabledButton
                             : ''
                         } ${styles.sendButton}`}
