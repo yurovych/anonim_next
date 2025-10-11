@@ -168,7 +168,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
-            setPeopleInChat(usersInRoom)
+            if (!isReconnected) {
+                setPeopleInChat(usersInRoom)
+            }
             if (usersInRoom > 2) {
                 setIsChatOpen(false)
             }
@@ -494,7 +496,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         ) : ''}
 
-                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason ? (
+                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason && peopleInChat < 2 ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
