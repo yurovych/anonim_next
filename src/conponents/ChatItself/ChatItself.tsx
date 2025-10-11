@@ -131,12 +131,30 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             }
         });
 
-        socketInstance.on("disconnect", () => {
-            if (isReconnected && socketInstance?.connected) return
-            setSocket(null);
-            setStatus('');
-        });
+        // socketInstance.on("disconnect", () => {
+        //     if (isReconnected && socketInstance?.connected) {
+        //         isReconnected = false;
+        //         return
+        //     } else {
+        //         setSocket(null);
+        //         setStatus('');
+        //     }
+        //
+        // });
 
+        socketInstance.on("disconnect_reason", (message: {
+            reason: string,
+            userId: string,
+        }) => {
+            if (isReconnected && socketInstance?.connected) {
+                isReconnected = false;
+                return
+            } else {
+                setReason(message)
+                setSocket(null);
+                setStatus('');
+            }
+        });
 
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
             wasConnectedBefore = true;
@@ -162,14 +180,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 isTyping: false,
             })
         });
-        socketInstance.on("disconnect_reason", (message: {
-            reason: string,
-            userId: string,
-        }) => {
-            if (isReconnected && socketInstance?.connected) return
-            setReason(message)
-            setStatus('')
-        });
+
         socketInstance.on("have-active-chat", () => {
             setHaveActiveChat(true);
         });
