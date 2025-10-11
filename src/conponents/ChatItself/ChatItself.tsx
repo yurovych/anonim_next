@@ -52,6 +52,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         allUsers: number,
     } | null>(null);
 
+
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
     const intervalRef = useRef<any>(null);
@@ -171,6 +172,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
         socketInstance.on("reconnected", () => {
             setStatus(STATUS_CONNECTED)
+            setReason(null)
         });
         socketInstance.on("metrics", (message: {
             usersCount: number,
@@ -400,6 +402,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
                             ) : ''}
                             <div className={styles.chartHistory} ref={historyRef}>
+                                {/*<p style={{fontSize: '10px'}}>{`Status_${status}`}</p>*/}
+                                {/*<p style={{fontSize: '10px'}}>{`TheOneWhoLeft_${theOneWhoLeft}`}</p>*/}
+                                {/*<p style={{fontSize: '10px'}}>{`Reason_${reason?.reason}`}</p>*/}
                                 {messages.map((item, index) => (
                                     <div
                                         className={
