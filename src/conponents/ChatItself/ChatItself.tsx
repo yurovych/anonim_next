@@ -60,6 +60,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
     const STATUS_WAITING = `Очікуємо ${interlocutorData.sex === 'male' ? 'співрозмовника' : 'співрозмовницю'} від ${interlocutorData.ageFrom} до ${interlocutorData.ageTo} ${interlocutorData.ageTo?.toString().at(-1) === '1' ? 'року' : 'років'}...`;
     const STATUS_CONNECTED = "З'єднано";
+    const STATUS_RECONNECTED = "З'єднання відновлено!"
 
     useEffect(() => {
         if (typingRef.current) {
@@ -161,6 +162,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             })
         });
         socketInstance.on("disconnect_reason", (message: { reason: string, userId: string }) => {
+            if (status === STATUS_RECONNECTED) return
             setReason(message)
             setStatus('')
         });
@@ -171,7 +173,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setIsTypingObj(message);
         });
         socketInstance.on("reconnected", () => {
-            setStatus(STATUS_CONNECTED)
+            setStatus(STATUS_RECONNECTED)
             setReason(null)
         });
         socketInstance.on("metrics", (message: {
