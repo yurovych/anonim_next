@@ -36,6 +36,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         waiting: `Очікуємо...`,
         connected: `З'єднано`,
         reconnected: `З'єднання відновлено!`,
+        reconnectingProcess: 'Перепідключення',
         disconnected: `Немає зв'язку зі співрозмовником`
     }
 
@@ -129,6 +130,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 });
             } else {
                 isReconnected = false;
+                setStatus(statusType.reconnectingProcess);
                 reconnectTimeout = setTimeout(() => {
                     socketInstance.emit("reconnect-to-chat", {
                         chatId: localChatId,
@@ -396,6 +398,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 return '#76ABAE'
             case statusType.disconnected:
                 return '#C62300'
+            case statusType.reconnectingProcess:
+                return '#FEB21A'
             default:
                 return '#228B22'
         }
