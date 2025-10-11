@@ -588,11 +588,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={status === statusType.disconnected || !socket?.connected}
+                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected}
                     />
                     <button
-                        disabled={status === statusType.disconnected || !socket?.connected || !newMessage}
-                        className={`${status === statusType.disconnected || !socket?.connected || !newMessage
+                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage}
+                        className={`${status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage
                             ? styles.disabledButton
                             : ''
                         } ${styles.sendButton}`}
