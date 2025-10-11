@@ -399,6 +399,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     <div className={styles.statusDot} style={{backgroundColor: getStatusColor()}}></div>
                     <p className={styles.statusValue}>{`Статус: ${status}`}</p>
                 </div>
+                <p className={styles.statusValue}>People in chat:{peopleInChat}</p>
 
                 {socket?.connected ? (
                     <>
