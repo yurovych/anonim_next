@@ -409,9 +409,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         <>
             {metrics ? <p className={styles.controlAllUsers}>control: {metrics.allUsers}</p> : ''}
             {modal === MODALS.IS_EXIT ? <ExitModal setModal={setModal} confirm={confirmLeaveChat}/> : ''}
-            {modal === MODALS.IS_BLACKLIST ?
-                <AddToBlackListModal setModal={setModal}
-                                     confirm={confirmAddToBlackList}/> : ''}
+            {modal === MODALS.IS_BLACKLIST
+                ?
+                <AddToBlackListModal
+                    setModal={setModal}
+                    confirm={confirmAddToBlackList}
+                />
+                : ''
+            }
 
             <div className={styles.chart}>
                 <div className={styles.status}>
@@ -493,13 +498,13 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         {status === statusType.reconnectingProcess ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    Перепідключаю...
+                                    Перепідключення...
                                 </p>
                                 <p className={styles.connectionIcon}>⚙️</p>
                             </div>
                         ) : ''}
 
-                        {theOneWhoLeft && peopleInChat < 2 ? (
+                        {theOneWhoLeft ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {theOneWhoLeft === userId ? 'Ви покинули чат' : `Нажаль ${interlocutorData.sex === 'male' ? 'співрозмовник покинув' : 'співрозмовниця покинула'} чат!`}
@@ -540,7 +545,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         : (
                                             <div>
                                                 <p className={styles.leftChatText}>🤔</p>
-                                                <p className={styles.leftChatText}>`${interlocutorData.sex === 'male' ? 'Співрозмовник кудись зник' : 'Співрозмовниця кудись зникла'}`</p>
+                                                <p className={styles.leftChatText}>{interlocutorData.sex === 'male' ? 'Співрозмовник кудись зник' : 'Співрозмовниця кудись зникла'}</p>
                                                 <p className={styles.leftChatText}>Пропоную трохи зачекати</p>
                                             </div>
 
