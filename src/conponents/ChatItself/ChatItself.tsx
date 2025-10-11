@@ -131,16 +131,15 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             }
         });
 
-        // socketInstance.on("disconnect", () => {
-        //     if (isReconnected && socketInstance?.connected) {
-        //         isReconnected = false;
-        //         return
-        //     } else {
-        //         setSocket(null);
-        //         setStatus('');
-        //     }
-        //
-        // });
+        socketInstance.on("disconnect", () => {
+            if (isReconnected && socketInstance?.connected) {
+                isReconnected = false;
+            } else {
+                setSocket(null);
+                setStatus('');
+            }
+
+        });
 
         socketInstance.on("disconnect_reason", (message: {
             reason: string,
@@ -148,10 +147,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         }) => {
             if (isReconnected && socketInstance?.connected) {
                 isReconnected = false;
-                return
             } else {
                 setReason(message)
-                setSocket(null);
                 setStatus('');
             }
         });
