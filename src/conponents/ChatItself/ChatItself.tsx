@@ -94,6 +94,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     useEffect(() => {
         let wasConnectedBefore = false;
         let localChatId = '';
+        let isReconnected = false;
 
         const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
@@ -122,6 +123,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     interlocutorData,
                 });
             } else {
+                isReconnected = false;
                 socketInstance.emit("reconnect-to-chat", {
                     chatId: localChatId,
                     uId: userId,
@@ -132,7 +134,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("disconnect", () => {
-            if (status === STATUS_RECONNECTED) return
+            if (isReconnected) return
             setSocket(null);
             setStatus('');
         });
@@ -162,8 +164,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 isTyping: false,
             })
         });
-        socketInstance.on("disconnect_reason", (message: { reason: string, userId: string }) => {
-            if (status === STATUS_RECONNECTED) return
+        socketInstance.on("disconnect_reason", (message: {
+            reason: string,
+            userId: string,
+        }) => {
+            if (isReconnected) return
             setReason(message)
             setStatus('')
         });
@@ -176,6 +181,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("reconnected", () => {
             setStatus(STATUS_RECONNECTED)
             setReason(null)
+            isReconnected = true;
         });
         socketInstance.on("metrics", (message: {
             usersCount: number,
