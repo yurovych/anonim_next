@@ -381,15 +381,7 @@
         color: var(--dirty-blue);
         text-align: center;
     }
-
-    .connectionAnimation {
-        display: flex;
-    }
-
-    .connectionIcon {
-        animation: connect 5s linear infinite;
-    }
-
+    
     .dontLeaveText {
         font-size: 14px;
         color: var(--main-gray);
@@ -400,6 +392,14 @@
         font-size: 14px;
         color: var(--dirty-blue)
     }
+}
+
+.connectionAnimation {
+    display: flex;
+}
+
+.connectionIcon {
+    animation: connect 5s linear infinite;
 }
 
 .controlAllUsers {

@@ -418,9 +418,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     <div className={styles.statusDot} style={{backgroundColor: getStatusColor()}}></div>
                     <p className={styles.statusValue}>{`Статус: ${status}`}</p>
                 </div>
-                <p className={styles.statusValue}>People in chat:{peopleInChat}</p>
-                <p className={styles.statusValue}>Reason:{reason?.reason}</p>
-
                 {socket?.connected ? (
                     <>
                         <div className={styles.chartHistoryWrapper}>
@@ -480,7 +477,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         {!theOneWhoLeft && peopleInChat < 2 && status === statusType.reconnected && !reason ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    Схоже що ти тут сам... 😔
+                                    Схоже тут більше нікого нема... 😔
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleGoHome}
@@ -490,6 +487,15 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     </p>
                                 </div>
                                 {getAddToBlackListElement()}
+                            </div>
+                        ) : ''}
+
+                        {status === statusType.reconnectingProcess ? (
+                            <div className={styles.leftChatBlock}>
+                                <p className={styles.leftChatText}>
+                                    Перепідключаю...
+                                </p>
+                                <p className={styles.connectionIcon}>⚙️</p>
                             </div>
                         ) : ''}
 
@@ -548,7 +554,18 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
                         {isTypingObj.isTyping && isTypingObj.uId !== userId && socket.connected
                             ? <p className={styles.isTyping}>
-                                Щось тобі пишe... 🖊️
+                                Щось пишe... 🖊️
+                            </p>
+                            : ''
+                        }
+                        {status
+                        && messages.length === 0
+                        && !isTypingObj.isTyping
+                        && !theOneWhoLeft
+                        && socket.connected
+                        && (status === statusType.connected || status === statusType.waiting)
+                            ? <p className={styles.isTyping}>
+                                {status}
                             </p>
                             : ''
                         }
@@ -588,11 +605,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected}
+                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || (peopleInChat < 2 && status === statusType.reconnected)}
                     />
                     <button
-                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage}
-                        className={`${status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage
+                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage || (peopleInChat < 2 && status === statusType.reconnected)}
+                        className={`${status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage || (peopleInChat < 2 && status === statusType.reconnected)
                             ? styles.disabledButton
                             : ''
                         } ${styles.sendButton}`}
