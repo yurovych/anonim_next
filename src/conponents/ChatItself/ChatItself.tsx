@@ -134,7 +134,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("disconnect", () => {
-            if (isReconnected && socket?.connected) return
+            if (isReconnected && socketInstance?.connected) return
             setSocket(null);
             setStatus('');
         });
@@ -168,7 +168,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             reason: string,
             userId: string,
         }) => {
-            if (isReconnected && socket?.connected) return
+            if (isReconnected && socketInstance?.connected) return
             setReason(message)
             setStatus('')
         });
