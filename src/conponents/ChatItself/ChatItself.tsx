@@ -60,7 +60,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
-    const intervalRef = useRef<any>(null);
     const inputRef = useRef<any>(null);
 
 
@@ -101,6 +100,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         let localChatId = '';
         let isReconnected = false;
         let isDisconnected = false;
+        let reconnectTimeout: NodeJS.Timeout | null = null;
 
         const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
             reconnection: true,
@@ -120,7 +120,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
         socketInstance.on("connect", () => {
             setSocket(socketInstance);
-            clearInterval(intervalRef.current)
 
             if (!wasConnectedBefore) {
                 socketInstance.emit("find-chat", {
@@ -130,10 +129,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 });
             } else {
                 isReconnected = false;
-                socketInstance.emit("reconnect-to-chat", {
-                    chatId: localChatId,
-                    uId: userId,
-                });
+                reconnectTimeout = setTimeout(() => {
+                    socketInstance.emit("reconnect-to-chat", {
+                        chatId: localChatId,
+                        uId: userId,
+                    });
+                }, 11000);
             }
         });
 
@@ -223,8 +224,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
             }
             socketInstance.disconnect();
         };
