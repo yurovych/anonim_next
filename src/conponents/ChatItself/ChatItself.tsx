@@ -149,13 +149,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("disconnect", () => {
-            if (!isReconnected) {
-                isDisconnected = true;
-            }
-
-            if (isReconnected && socketInstance?.connected) {
+            if (isReconnected) {
                 isReconnected = false;
             } else {
+                isDisconnected = true;
                 setSocket(null);
                 setStatus(statusType.disconnected);
             }
@@ -165,13 +162,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             reason: string,
             userId: string,
         }) => {
-            if (!isReconnected) {
-                setStatus(statusType.disconnected);
-                isDisconnected = true;
-            } else {
+            if (isReconnected) {
                 isReconnected = false;
+            } else {
+                isDisconnected = true;
+                setStatus(statusType.disconnected);
             }
-
             setReason(message)
         });
 
@@ -188,9 +184,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         });
 
         socketInstance.on("room-size", ({usersInRoom}) => {
-            if (!isReconnected) {
-                setPeopleInChat(usersInRoom)
-            }
+            setPeopleInChat(usersInRoom)
             if (usersInRoom > 2) {
                 setIsChatOpen(false)
             }
@@ -515,7 +509,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         ) : ''}
 
-                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason && peopleInChat < 2 ? (
+                        {status === statusType.disconnected && !theOneWhoLeft && reason ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
@@ -557,10 +551,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 ) : (
                     <div className={styles.connectionStatus}>
                         {chatId ? (
-                            <p className={styles.connectionText}>Не підключено...</p>
+                            <p className={styles.connectionText}>Очікуємо підключення...</p>
                         ) : (
                             <p className={styles.connectionText}>
-                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Не підкючено...'}
+                                {haveActiveChat ? 'У вас вже є активна сесія!' : 'Очікуємо підключення...'}
                             </p>)
                         }
                         {!haveActiveChat ? (
@@ -589,11 +583,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={status === statusType.disconnected || !socket?.connected || peopleInChat < 2}
+                        disabled={status === statusType.disconnected || !socket?.connected}
                     />
                     <button
-                        disabled={status === statusType.disconnected || !socket?.connected || peopleInChat < 2 || !newMessage}
-                        className={`${status === statusType.disconnected || !socket?.connected || peopleInChat < 2 || !newMessage
+                        disabled={status === statusType.disconnected || !socket?.connected || !newMessage}
+                        className={`${status === statusType.disconnected || !socket?.connected || !newMessage
                             ? styles.disabledButton
                             : ''
                         } ${styles.sendButton}`}
