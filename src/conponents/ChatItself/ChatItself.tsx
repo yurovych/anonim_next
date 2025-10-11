@@ -494,7 +494,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         ) : ''}
 
-                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason && peopleInChat < 2 ? (
+                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
