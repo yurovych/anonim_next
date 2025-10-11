@@ -36,7 +36,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         waiting: `Очікуємо...`,
         connected: `З'єднано`,
         reconnected: `З'єднання відновлено!`,
-        disconnected: `Немає з'єднання`
+        disconnected: `Немає зв'язку зі співрозмовником`
     }
 
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -472,7 +472,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         ) : ''}
 
-                        {theOneWhoLeft ? (
+                        {theOneWhoLeft && peopleInChat < 2 ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {theOneWhoLeft === userId ? 'Ви покинули чат' : 'Нажаль співрозмовник покинув чат!'}
@@ -493,7 +493,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             </div>
                         ) : ''}
 
-                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason ? (
+                        {(status === statusType.disconnected || status === statusType.reconnected) && !theOneWhoLeft && reason && peopleInChat < 2 ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
                                     {DISCONNECT_ON_PURPOSE_REASONS.includes(reason.reason)
