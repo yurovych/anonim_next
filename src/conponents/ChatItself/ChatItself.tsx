@@ -127,8 +127,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 socketInstance.emit("reconnect-to-chat", {
                     chatId: localChatId,
                     uId: userId,
-                    userData,
-                    interlocutorData,
                 });
             }
         });
@@ -497,7 +495,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 ) : (
                     <div className={styles.connectionStatus}>
                         {chatId ? (
-                            <p className={styles.connectionText}>Не підкючено...</p>
+                            <p className={styles.connectionText}>Не підключено...</p>
                         ) : (
                             <p className={styles.connectionText}>
                                 {haveActiveChat ? 'У вас вже є активна сесія!' : 'Не підкючено...'}
