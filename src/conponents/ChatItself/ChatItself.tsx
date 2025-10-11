@@ -137,6 +137,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             }
         });
 
+        socketInstance.on("reconnected", () => {
+            setStatus(statusType.reconnected);
+            setReason(null)
+            if (!isDisconnected) {
+                isReconnected = true;
+            }
+            if (isDisconnected) {
+                isDisconnected = false;
+            }
+        });
+
         socketInstance.on("disconnect", () => {
             if (!isReconnected) {
                 isDisconnected = true;
@@ -154,7 +165,14 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             reason: string,
             userId: string,
         }) => {
+            if (!isReconnected) {
+                setStatus(statusType.disconnected);
+            }
             setReason(message)
+        });
+
+        socketInstance.on("waiting-for-match", () => {
+            setStatus(statusType.waiting);
         });
 
         socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
@@ -165,10 +183,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setStatus(statusType.connected);
         });
 
-        socketInstance.on("waiting-for-match", () => {
-            setStatus(statusType.waiting);
-        });
-
         socketInstance.on("room-size", ({usersInRoom}) => {
             if (!isReconnected) {
                 setPeopleInChat(usersInRoom)
@@ -177,6 +191,11 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 setIsChatOpen(false)
             }
         });
+
+        socketInstance.on("user-typing", (message: any) => {
+            setIsTypingObj(message);
+        });
+
         socketInstance.on("receive-message", (message: Message) => {
             setReceivedMessage(message)
             setIsTypingObj({
@@ -188,19 +207,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("have-active-chat", () => {
             setHaveActiveChat(true);
         });
-        socketInstance.on("user-typing", (message: any) => {
-            setIsTypingObj(message);
-        });
-        socketInstance.on("reconnected", () => {
-            setStatus(statusType.reconnected);
-            setReason(null)
-            if (!isDisconnected) {
-                isReconnected = true;
-            }
-            if (isDisconnected) {
-                isDisconnected = false;
-            }
-        });
+
         socketInstance.on("metrics", (message: {
             usersCount: number,
             waitingCount: number,
@@ -409,6 +416,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     <p className={styles.statusValue}>{`Статус: ${status}`}</p>
                 </div>
                 <p className={styles.statusValue}>People in chat:{peopleInChat}</p>
+                <p className={styles.statusValue}>Reason:{reason?.reason}</p>
 
                 {socket?.connected ? (
                     <>
