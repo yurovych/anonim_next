@@ -241,7 +241,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                 chatId: chatId,
             });
         }
-    }, 500), [socket, userId, chatId]);
+    }, 400), [socket, userId, chatId]);
 
     useEffect(() => {
         return () => {
