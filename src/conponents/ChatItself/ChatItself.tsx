@@ -465,6 +465,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                             {!theOneWhoLeft && status !== statusType.disconnected ? (
                                 <>
                                     <div className={styles.summarySection}>
+                                        <div className={styles.summaryMetrics}>
+                                            <p className={styles.metricsData}>
+                                                Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
+                                            </p>
+                                            <p className={styles.metricsData}>
+                                                {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
+                                                від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
+                                            </p>
+                                            <span style={{fontSize: '12px'}}>.</span>
+                                        </div>
+
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
                                                 <p className={styles.metricsData}>
@@ -492,17 +503,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                 </p>
                                             </div>
                                         ) : ''}
-
-                                        <div className={styles.summaryMetrics}>
-                                            <p className={styles.metricsData}>
-                                                Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
-                                            </p>
-                                            <p className={styles.metricsData}>
-                                                {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
-                                                від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
-                                            </p>
-                                            <span style={{fontSize: '12px'}}>.</span>
-                                        </div>
 
                                         <div className={styles.summaryButtons}>
                                             <p className={`${styles.generalButton} ${styles.buttonExit}`}

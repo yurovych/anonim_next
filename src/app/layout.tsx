@@ -26,8 +26,8 @@ export const metadata: Metadata = {
         images: [
             {
                 url: "/images/ceo_image.png",
-                width: 950,
-                height: 950,
+                width: 400,
+                height: 400,
                 alt: "Enonym - Анонімний чат",
             },
         ],
