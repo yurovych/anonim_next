@@ -101,11 +101,13 @@
             }
 
             .menMetrics {
-                color: var(--coor-blue)
+                color: var(--coor-blue);
+                font-weight: 500;
             }
 
             .womenMetrics {
-                color: var(--color-pink)
+                color: var(--color-pink);
+                font-weight: 500;
             }
         }
 
