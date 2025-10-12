@@ -4,19 +4,8 @@ import ChatItself from "@/conponents/ChatItself/ChatItself";
 import JoinForm from "@/conponents/JoinForm";
 import {useState, useEffect} from "react";
 import {v4 as uuidv4} from "uuid";
-import {MODALS} from "@/types/generalTypes";
+import {InterlocutorData, MODALS, UserData} from "@/types/generalTypes";
 
-export interface UserData {
-    age: number | null,
-    sex: string
-    blackList: string[]
-}
-
-export interface InterlocutorData {
-    ageFrom: number | null,
-    ageTo: number | null,
-    sex: string
-}
 
 const MainElement = () => {
     const [userId, setUserId] = useState<string>('');

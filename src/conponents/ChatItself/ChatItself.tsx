@@ -2,16 +2,15 @@
 
 import {
     useCallback,
-    useEffect, useRef, useState
+    useEffect, useMemo, useRef, useState
 } from 'react';
 import styles from './chatItselfStyles.module.css';
-import {InterlocutorData, UserData} from "@/conponents/MainElement/MainElement";
 import {format} from 'date-fns';
 import {io, Socket} from "socket.io-client";
 import debounce from 'lodash.debounce';
 import ExitModal from "@/conponents/Modals/ExitModal";
 import AddToBlackListModal from "@/conponents/Modals/AddToBlackListModal";
-import {Message, MODALS} from "@/types/generalTypes";
+import {InterlocutorData, Message, MODALS, Participant, UserData} from "@/types/generalTypes";
 
 export interface ChatItselfProps {
     userData: UserData;
@@ -34,7 +33,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                }) => {
     const statusType = {
         waiting: `Очікуємо...`,
-        connected: `З'єднано`,
+        connected: `З'єднано!`,
         reconnected: `З'єднання відновлено!`,
         reconnectingProcess: 'Перепідключення',
         disconnected: `Немає зв'язку зі ${interlocutorData.sex === 'male' ? 'співрозмовником' : 'співрозмовницею'}`,
@@ -55,7 +54,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     const [metrics, setMetrics] = useState<{
         usersCount: number,
         waitingCount: number,
-        allUsers: number,
+        allUsers: Record<string, Participant>,
     } | null>(null);
 
 
@@ -94,6 +93,41 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             })
         }
     }, [receivedMessage]);
+
+    const {suitableMembers, menUsers, womenUsers} = useMemo(() => {
+        if (!metrics) return {suitableMembers: 0, menUsers: 0, womenUsers: 0}
+        const allUsers = Object.values(metrics?.allUsers)
+        let menUsers = 0
+        let womenUsers = 0
+
+        const suitableMembers = allUsers?.filter((user) => {
+            if (user.userData.sex === 'male') {
+                menUsers++
+            } else if (user.userData.sex === 'female') {
+                womenUsers++
+            }
+
+            return (
+                user.uId !== userId &&
+                user.userData.sex ===
+                interlocutorData.sex &&
+                userData.sex ===
+                user.interlocutorData.sex &&
+                user.userData.age >=
+                interlocutorData.ageFrom! &&
+                user.userData.age <=
+                interlocutorData.ageTo! &&
+                userData.age! >=
+                user.interlocutorData.ageFrom &&
+                userData.age! <=
+                user.interlocutorData.ageTo &&
+                !user.userData.blackList.includes(userId) &&
+                !userData.blackList.includes(user.uId)
+            );
+        }).length || 0
+
+        return {suitableMembers, menUsers, womenUsers}
+    }, [metrics])
 
 
     useEffect(() => {
@@ -135,6 +169,8 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     socketInstance.emit("reconnect-to-chat", {
                         chatId: localChatId,
                         uId: userId,
+                        userData,
+                        interlocutorData
                     });
                 }, 11000);
             }
@@ -212,17 +248,17 @@ const ChatItself: React.FC<ChatItselfProps> = ({
         socketInstance.on("metrics", (message: {
             usersCount: number,
             waitingCount: number,
-            allUsers: number,
+            allUsers: Record<string, Participant>,
         }) => {
             setMetrics(message)
         });
         socketInstance.on("chat-left", (message: { uId: string }) => {
             setTheOneWhoLeft(message.uId)
-            setStatus(statusType.disconnected)
-            setModal(MODALS.MODAL_OFF);
             setChatId(null)
             localChatId = ''
             wasConnectedBefore = false;
+            setStatus(statusType.disconnected)
+            setModal(MODALS.MODAL_OFF);
         });
 
         return () => {
@@ -407,7 +443,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
     return (
         <>
-            {metrics ? <p className={styles.controlAllUsers}>control: {metrics.allUsers}</p> : ''}
+            {metrics ? <p className={styles.controlAllUsers}>control: {Object.keys(metrics?.allUsers)?.length}</p> : ''}
             {modal === MODALS.IS_EXIT ? <ExitModal setModal={setModal} confirm={confirmLeaveChat}/> : ''}
             {modal === MODALS.IS_BLACKLIST
                 ?
@@ -431,8 +467,29 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                     <div className={styles.summarySection}>
                                         {metrics ? (
                                             <div className={styles.summaryMetrics}>
-                                                <p className={styles.metricsData}>Онлайн: {metrics.usersCount}</p>
-                                                <p className={styles.metricsData}>Очікують: {metrics.waitingCount}</p>
+                                                <p className={styles.metricsData}>
+                                                    <span>Онлайн: {metrics.usersCount}</span>
+                                                    &nbsp;
+                                                    (
+                                                    <span
+                                                        className={styles.menMetrics}
+                                                    >
+                                                        {menUsers}
+                                                    </span>
+                                                    &nbsp; - &nbsp;
+                                                    <span
+                                                        className={styles.womenMetrics}
+                                                    >
+                                                         {womenUsers}
+                                                    </span>
+                                                    )
+                                                </p>
+                                                <p className={styles.metricsData}>
+                                                    В очікуванні: {metrics.waitingCount}
+                                                </p>
+                                                <p className={styles.metricsData}>
+                                                    Вам підходять: {suitableMembers}
+                                                </p>
                                             </div>
                                         ) : ''}
 
@@ -444,6 +501,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                 {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
                                                 від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
                                             </p>
+                                            <span style={{fontSize: '12px'}}>.</span>
                                         </div>
 
                                         <div className={styles.summaryButtons}>
@@ -593,6 +651,9 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         && (status === statusType.connected || status === statusType.waiting)
                             ? <p className={styles.isTyping}>
                                 {status}
+                                &nbsp;
+                                {status === statusType.connected ? '✔️' : ''}
+                                {status === statusType.waiting ? '⏳' : ''}
                             </p>
                             : ''
                         }

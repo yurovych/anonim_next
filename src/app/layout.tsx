@@ -17,6 +17,7 @@ export const metadata: Metadata = {
         icon: '/icons/favicon_icon.svg',
         apple: '/icons/favicon_icon.svg',
     },
+    metadataBase: new URL('https://enonym.com'),
     openGraph: {
         title: "Enonym - Анонімний чат для українців Данії.",
         description: "Заводь нові знайомства з Enonym ",

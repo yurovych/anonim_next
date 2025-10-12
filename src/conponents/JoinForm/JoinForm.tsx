@@ -2,8 +2,7 @@
 
 import {useState} from 'react';
 import styles from "./joinFormStyles.module.css";
-import {InterlocutorData, UserData} from "@/conponents/MainElement/MainElement";
-import {MODALS} from "@/types/generalTypes";
+import {InterlocutorData, MODALS, UserData} from "@/types/generalTypes";
 import CleanBlackListModal from "@/conponents/Modals/CleanBlackListModal";
 
 

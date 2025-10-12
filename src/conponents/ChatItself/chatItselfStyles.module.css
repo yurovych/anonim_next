@@ -37,7 +37,7 @@
     border: 1px solid var(--main-gray);
     border-radius: 12px;
     margin-top: 32px;
-    padding: 12px 12px 12px 12px;
+    padding: 8px 12px 12px 12px;
     background-color: var(--background);
 
     @media (max-width: 768px) {
@@ -68,8 +68,6 @@
             opacity: 0.6;
         }
     }
-
-
 }
 
 .chartHistoryWrapper {
@@ -84,7 +82,7 @@
     .summarySection {
         display: flex;
         gap: 24px;
-        height: 48px;
+        height: 56px;
         min-height: 48px;
         border-bottom: 1px solid var(--main-gray);
         padding: 12px 0;
@@ -100,6 +98,14 @@
                 text-wrap: nowrap;
                 color: var(--dirty-blue);
                 opacity: 0.5;
+            }
+
+            .menMetrics {
+                color: var(--coor-blue)
+            }
+
+            .womenMetrics {
+                color: var(--color-pink)
             }
         }
 
@@ -381,7 +387,7 @@
         color: var(--dirty-blue);
         text-align: center;
     }
-    
+
     .dontLeaveText {
         font-size: 14px;
         color: var(--main-gray);
