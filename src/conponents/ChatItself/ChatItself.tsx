@@ -218,6 +218,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
     }
 
     const confirmAddToBlackList = () => {
+        confirmLeaveChat()
         if (matchId) {
             const newUserData = {
                 ...userData,
