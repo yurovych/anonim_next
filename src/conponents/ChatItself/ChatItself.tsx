@@ -6,11 +6,11 @@ import {
 } from 'react';
 import styles from './chatItselfStyles.module.css';
 import {format} from 'date-fns';
-import {io, Socket} from "socket.io-client";
 import debounce from 'lodash.debounce';
 import ExitModal from "@/conponents/Modals/ExitModal";
 import AddToBlackListModal from "@/conponents/Modals/AddToBlackListModal";
-import {InterlocutorData, Message, MODALS, Participant, UserData} from "@/types/generalTypes";
+import {InterlocutorData, Message, MODALS, UserData} from "@/types/generalTypes";
+import useSocketInit from "@/hooks/useSocketInit";
 
 export interface ChatItselfProps {
     userData: UserData;
@@ -31,39 +31,45 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                                    modal,
                                                    setModal
                                                }) => {
-    const statusType = {
-        waiting: `Очікуємо...`,
-        connected: `З'єднано!`,
-        reconnected: `З'єднання відновлено!`,
-        reconnectingProcess: 'Перепідключення',
-        disconnected: `Немає зв'язку зі ${interlocutorData.sex === 'male' ? 'співрозмовником' : 'співрозмовницею'}`,
-    }
-
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [newMessage, setNewMessage] = useState<string>('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTypingObj, setIsTypingObj] = useState<{ isTyping: boolean, uId: string }>({isTyping: false, uId: ''});
-    const [receivedMessage, setReceivedMessage] = useState<Message | null>(null)
-    const [status, setStatus] = useState<string>(statusType.disconnected);
-    const [chatId, setChatId] = useState<string | null>(null);
     const [theOneWhoLeft, setTheOneWhoLeft] = useState<string>('');
-    const [matchId, setMatchId] = useState<string | null>(null);
-    const [haveActiveChat, setHaveActiveChat] = useState<boolean>(false);
-    const [reason, setReason] = useState<{ reason: string, userId: string } | null>(null);
-    const [peopleInChat, setPeopleInChat] = useState<number>(0);
-    const [metrics, setMetrics] = useState<{
-        usersCount: number,
-        waitingCount: number,
-        allUsers: Record<string, Participant>,
-    } | null>(null);
-
 
     const typingRef = useRef<any>(null);
     const historyRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<any>(null);
 
+    const {
+        socket,
+        status,
+        reason,
+        chatId,
+        matchId,
+        peopleInChat,
+        receivedMessage,
+        haveActiveChat,
+        metrics,
+        statusType,
+        setMatchId,
+        setReason
+    } = useSocketInit(
+        userId,
+        userData,
+        interlocutorData,
+        setIsChatOpen,
+        isTypingObj,
+        setIsTypingObj,
+        setModal,
+        setTheOneWhoLeft
+    )
 
-    const DISCONNECT_ON_PURPOSE_REASONS = ['server namespace disconnect', 'client namespace disconnect', 'forced close']
+
+    const DISCONNECT_ON_PURPOSE_REASONS = [
+        'server namespace disconnect',
+        'client namespace disconnect',
+        'forced close'
+    ]
     const DISCONNECT_TRANSPORT_CLOSE = 'transport close'
 
     useEffect(() => {
@@ -89,7 +95,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             setMessages((prevMessages) => [...prevMessages, receivedMessage])
         } else if (receivedMessage && receivedMessage?.uId === userId) {
             setMessages((prevMessages) => {
-                return prevMessages.map(item => item.message === receivedMessage?.message && item.createdAt === receivedMessage?.createdAt ? receivedMessage : item)
+                return prevMessages.map(item =>
+                    item.message === receivedMessage?.message &&
+                    item.createdAt === receivedMessage?.createdAt
+                        ? receivedMessage
+                        : item
+                )
             })
         }
     }, [receivedMessage]);
@@ -128,146 +139,6 @@ const ChatItself: React.FC<ChatItselfProps> = ({
 
         return {suitableMembers, menUsers, womenUsers}
     }, [metrics])
-
-
-    useEffect(() => {
-        let wasConnectedBefore = false;
-        let localChatId = '';
-        let isReconnected = false;
-        let isDisconnected = false;
-        let reconnectTimeout: NodeJS.Timeout | null = null;
-
-        const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
-            reconnection: true,
-            reconnectionAttempts: 30,
-            timeout: 5000,
-            reconnectionDelay: 2000,
-            query: {userId: userId},
-            transports: ['websocket'],
-            transportOptions: {
-                websocket: {
-                    pingInterval: 10000,
-                    pingTimeout: 10000,
-                },
-            },
-
-        });
-
-        socketInstance.on("connect", () => {
-            setSocket(socketInstance);
-
-            if (!wasConnectedBefore) {
-                socketInstance.emit("find-chat", {
-                    uId: userId,
-                    userData,
-                    interlocutorData,
-                });
-            } else {
-                isReconnected = false;
-                setStatus(statusType.reconnectingProcess);
-                reconnectTimeout = setTimeout(() => {
-                    socketInstance.emit("reconnect-to-chat", {
-                        chatId: localChatId,
-                        uId: userId,
-                        userData,
-                        interlocutorData
-                    });
-                }, 11000);
-            }
-        });
-
-        socketInstance.on("reconnected", () => {
-            setStatus(statusType.reconnected);
-            setReason(null)
-            if (!isDisconnected) {
-                isReconnected = true;
-            }
-            if (isDisconnected) {
-                isDisconnected = false;
-            }
-        });
-
-        socketInstance.on("disconnect", () => {
-            if (isReconnected) {
-                isReconnected = false;
-            } else {
-                isDisconnected = true;
-                setSocket(null);
-                setStatus(statusType.disconnected);
-            }
-        });
-
-        socketInstance.on("disconnect_reason", (message: {
-            reason: string,
-            userId: string,
-        }) => {
-            if (isReconnected) {
-                isReconnected = false;
-            } else {
-                isDisconnected = true;
-                setStatus(statusType.disconnected);
-            }
-            setReason(message)
-        });
-
-        socketInstance.on("waiting-for-match", () => {
-            setStatus(statusType.waiting);
-        });
-
-        socketInstance.on("chat-created", ({chatId, seekerId, matchId}) => {
-            wasConnectedBefore = true;
-            localChatId = chatId;
-            setChatId(chatId);
-            setMatchId(userId === seekerId ? matchId : seekerId);
-            setStatus(statusType.connected);
-        });
-
-        socketInstance.on("room-size", ({usersInRoom}) => {
-            setPeopleInChat(usersInRoom)
-            if (usersInRoom > 2) {
-                setIsChatOpen(false)
-            }
-        });
-
-        socketInstance.on("user-typing", (message: any) => {
-            setIsTypingObj(message);
-        });
-
-        socketInstance.on("receive-message", (message: Message) => {
-            setReceivedMessage(message)
-            setIsTypingObj({
-                ...isTypingObj,
-                isTyping: false,
-            })
-        });
-
-        socketInstance.on("have-active-chat", () => {
-            setHaveActiveChat(true);
-        });
-
-        socketInstance.on("metrics", (message: {
-            usersCount: number,
-            waitingCount: number,
-            allUsers: Record<string, Participant>,
-        }) => {
-            setMetrics(message)
-        });
-        socketInstance.on("chat-left", (message: { uId: string }) => {
-            setTheOneWhoLeft(message.uId)
-            setChatId(null)
-            localChatId = ''
-            wasConnectedBefore = false;
-            setStatus(statusType.disconnected)
-            setModal(MODALS.MODAL_OFF);
-        });
-
-        return () => {
-            if (reconnectTimeout) {
-                clearTimeout(reconnectTimeout);
-            }
-            socketInstance.disconnect();
-        };
-    }, []);
 
     const handleIsTyping = useCallback(debounce(() => {
         if (socket) {
@@ -463,57 +334,54 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                     <>
                         <div className={styles.chartHistoryWrapper}>
                             {!theOneWhoLeft && status !== statusType.disconnected ? (
-                                <>
-                                    <div className={styles.summarySection}>
+                                <div className={styles.summarySection}>
+                                    <div className={styles.summaryMetrics}>
+                                        <p className={styles.metricsData}>
+                                            Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
+                                        </p>
+                                        <p className={styles.metricsData}>
+                                            {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
+                                            від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
+                                        </p>
+                                        <span style={{fontSize: '12px'}}>.</span>
+                                    </div>
+
+                                    {metrics ? (
                                         <div className={styles.summaryMetrics}>
                                             <p className={styles.metricsData}>
-                                                Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'} {userData.age}р
-                                            </p>
-                                            <p className={styles.metricsData}>
-                                                {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}:
-                                                від {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
-                                            </p>
-                                            <span style={{fontSize: '12px'}}>.</span>
-                                        </div>
-
-                                        {metrics ? (
-                                            <div className={styles.summaryMetrics}>
-                                                <p className={styles.metricsData}>
-                                                    <span>Онлайн: {metrics.usersCount}</span>
-                                                    &nbsp;
-                                                    (
-                                                    <span
-                                                        className={styles.menMetrics}
-                                                    >
+                                                <span>Онлайн: {metrics.usersCount}</span>
+                                                &nbsp;
+                                                (
+                                                <span
+                                                    className={styles.menMetrics}
+                                                >
                                                         {menUsers}
                                                     </span>
-                                                    &nbsp; - &nbsp;
-                                                    <span
-                                                        className={styles.womenMetrics}
-                                                    >
+                                                &nbsp; - &nbsp;
+                                                <span
+                                                    className={styles.womenMetrics}
+                                                >
                                                          {womenUsers}
                                                     </span>
-                                                    )
-                                                </p>
-                                                <p className={styles.metricsData}>
-                                                    В очікуванні: {metrics.waitingCount}
-                                                </p>
-                                                <p className={styles.metricsData}>
-                                                    Вам підходять: {suitableMembers}
-                                                </p>
-                                            </div>
-                                        ) : ''}
-
-                                        <div className={styles.summaryButtons}>
-                                            <p className={`${styles.generalButton} ${styles.buttonExit}`}
-                                               onClick={() => setModal(MODALS.IS_EXIT)}
-                                            >
-                                                Вийти
+                                                )
+                                            </p>
+                                            <p className={styles.metricsData}>
+                                                В очікуванні: {metrics.waitingCount}
+                                            </p>
+                                            <p className={styles.metricsData}>
+                                                Вам підходять: {suitableMembers}
                                             </p>
                                         </div>
-                                    </div>
-                                </>
+                                    ) : ''}
 
+                                    <div className={styles.summaryButtons}>
+                                        <p className={`${styles.generalButton} ${styles.buttonExit}`}
+                                           onClick={() => setModal(MODALS.IS_EXIT)}
+                                        >
+                                            Вийти
+                                        </p>
+                                    </div>
+                                </div>
                             ) : ''}
                             <div className={styles.chartHistory} ref={historyRef}>
                                 {messages.map((item, index) => (
@@ -565,7 +433,10 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         {theOneWhoLeft ? (
                             <div className={styles.leftChatBlock}>
                                 <p className={styles.leftChatText}>
-                                    {theOneWhoLeft === userId ? 'Ви покинули чат' : `Нажаль ${interlocutorData.sex === 'male' ? 'співрозмовник покинув' : 'співрозмовниця покинула'} чат!`}
+                                    {theOneWhoLeft === userId
+                                        ? 'Ви покинули чат'
+                                        : `Нажаль ${interlocutorData.sex === 'male' ? 'співрозмовник покинув' : 'співрозмовниця покинула'} чат!`
+                                    }
                                 </p>
                                 <div className={styles.endChatButtons}>
                                     <p onClick={handleNewChat}
@@ -603,7 +474,12 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                                         : (
                                             <div>
                                                 <p className={styles.leftChatText}>🤔</p>
-                                                <p className={styles.leftChatText}>{interlocutorData.sex === 'male' ? 'Співрозмовник кудись зник' : 'Співрозмовниця кудись зникла'}</p>
+                                                <p className={styles.leftChatText}>
+                                                    {interlocutorData.sex === 'male'
+                                                        ? 'Співрозмовник кудись зник'
+                                                        : 'Співрозмовниця кудись зникла'
+                                                    }
+                                                </p>
                                                 <p className={styles.leftChatText}>Пропоную трохи зачекати</p>
                                             </div>
 
@@ -693,14 +569,31 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         placeholder="Повідомлення..."
                         className={styles.textarea}
                         maxLength={200}
-                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || (peopleInChat < 2 && status === statusType.reconnected)}
+                        disabled={
+                            status === statusType.disconnected
+                            || status === statusType.reconnectingProcess
+                            || !socket?.connected
+                            || (peopleInChat < 2 && status === statusType.reconnected)
+                        }
                     />
                     <button
-                        disabled={status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage || (peopleInChat < 2 && status === statusType.reconnected)}
-                        className={`${status === statusType.disconnected || status === statusType.reconnectingProcess || !socket?.connected || !newMessage || (peopleInChat < 2 && status === statusType.reconnected)
-                            ? styles.disabledButton
-                            : ''
-                        } ${styles.sendButton}`}
+                        disabled={
+                            status === statusType.disconnected
+                            || status === statusType.reconnectingProcess
+                            || !socket?.connected
+                            || !newMessage
+                            || (peopleInChat < 2 && status === statusType.reconnected)
+                        }
+                        className={
+                            `${status === statusType.disconnected
+                            || status === statusType.reconnectingProcess
+                            || !socket?.connected
+                            || !newMessage
+                            || (peopleInChat < 2 && status === statusType.reconnected)
+                                ? styles.disabledButton
+                                : ''
+                            } ${styles.sendButton}`
+                        }
                         type={'button'}
                         onClick={handleSubmit}
                     >
