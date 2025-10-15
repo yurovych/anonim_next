@@ -1,76 +1,76 @@
 .wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(255, 255, 255, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+
+  .content {
+    width: 400px;
+    height: 200px;
+    background-color: var(--background);
+    border: 1px solid var(--main-gray);
+    border-radius: 12px;
+    padding: 12px;
+    gap: 12px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 100;
 
-    .content {
-        width: 400px;
-        height: 200px;
-        background-color: var(--background);
-        border: 1px solid var(--main-gray);
-        border-radius: 12px;
-        padding: 12px;
-        gap: 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        @media (max-width: 768px) {
-            width: 90%;
-            height: 30%;
-        }
-
-        .text {
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .details {
-            width: 60%;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-main);
-            text-align: center;
-            opacity: 0.4;
-        }
-
-        .buttonsContainer {
-            display: flex;
-            gap: 12px;
-
-            .generalButton {
-                width: 100px;
-                text-align: center;
-                padding: 4px 10px;
-                color: var(--text-main);
-                background-color: var(--transparent-blue);
-                border-radius: 8px;
-                outline: none;
-                font-size: 16px;
-                font-weight: 500;
-                border: none;
-                align-self: center;
-
-                &:hover {
-                    cursor: pointer;
-                    color: var(--dirty-blue);
-                }
-
-                &:active {
-                    background-color: var(--transparent-gray02);
-                }
-            }
-        }
+    @media (max-width: 768px) {
+      width: 90%;
+      height: 30%;
     }
+
+    .text {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .details {
+      width: 60%;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-main);
+      text-align: center;
+      opacity: 0.4;
+    }
+
+    .buttonsContainer {
+      display: flex;
+      gap: 12px;
+
+      .generalButton {
+        width: 100px;
+        text-align: center;
+        padding: 4px 10px;
+        color: var(--text-main);
+        background-color: var(--transparent-blue);
+        border-radius: 8px;
+        outline: none;
+        font-size: 16px;
+        font-weight: 500;
+        border: none;
+        align-self: center;
+
+        &:hover {
+          cursor: pointer;
+          color: var(--dirty-blue);
+        }
+
+        &:active {
+          background-color: var(--transparent-gray02);
+        }
+      }
+    }
+  }
 }

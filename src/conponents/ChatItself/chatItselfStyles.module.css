@@ -1,431 +1,440 @@
 @keyframes connect {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(2);
-    }
-    40% {
-        transform: scale(2);
-    }
-    50% {
-        transform: scale(0.5);
-    }
-    60% {
-        transform: scale(2);
-    }
-    100% {
-        transform: scale(2);
-    }
+  0% {
+    transform: scale(2);
+  }
+  40% {
+    transform: scale(2);
+  }
+  50% {
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(2);
+  }
 }
 
 .chart {
-    position: relative;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  max-height: calc(100vh - 64px - 85px - 32px - 100px);
+  border: 1px solid var(--main-gray);
+  border-radius: 12px;
+  margin-top: 32px;
+  padding: 8px 12px 12px 12px;
+  background-color: var(--background);
+
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 32px - 64px - 24px - 72px);
+    margin-top: 24px;
+  }
+
+  .status {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    width: 100%;
-    height: 100%;
-    min-height: 300px;
-    max-height: calc(100vh - 64px - 85px - 32px - 100px);
-    border: 1px solid var(--main-gray);
-    border-radius: 12px;
-    margin-top: 32px;
-    padding: 8px 12px 12px 12px;
-    background-color: var(--background);
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--main-gray);
+    padding-bottom: 4px;
 
-    @media (max-width: 768px) {
-        max-height: calc(100vh - 32px - 64px - 24px - 72px);
-        margin-top: 24px;
+    .statusDot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      /*opacity: 0.5;*/
+      background-color: var(--dirty-blue);
+      animation: pulse 4s infinite;
     }
 
-    .status {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-bottom: 1px solid var(--main-gray);
-        padding-bottom: 4px;
-
-        .statusDot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            /*opacity: 0.5;*/
-            background-color: var(--dirty-blue);
-            animation: pulse 4s infinite;
-        }
-
-        .statusValue {
-            font-size: 12px;
-            text-wrap: nowrap;
-            color: var(--text-main);
-            opacity: 0.6;
-        }
+    .statusValue {
+      font-size: 12px;
+      text-wrap: nowrap;
+      color: var(--text-main);
+      opacity: 0.6;
     }
+  }
 }
 
 .chartHistoryWrapper {
-    min-height: 0;
-    height: 100%;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+
+  .summarySection {
+    display: flex;
+    gap: 16px;
+    height: 56px;
+    min-height: 48px;
+    border-bottom: 1px solid var(--main-gray);
+    padding: 12px 0;
+
+    .summaryMetrics {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+
+      .usersOnline {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .usersDistribution {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        text-wrap: nowrap;
+        color: var(--dirty-blue);
+        opacity: 0.5;
+      }
+
+      .personIcon {
+        width: 12px;
+        height: 12px;
+      }
+
+      .metricsData {
+        font-size: 12px;
+        text-wrap: nowrap;
+        color: var(--dirty-blue);
+        opacity: 0.5;
+      }
+    }
+
+    .summaryButtons {
+      display: flex;
+      align-self: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+  }
+
+  .chartHistory {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 12px;
+    margin-top: auto;
+    gap: 4px;
+    overflow-y: scroll;
+    padding-right: 12px;
 
-
-    .summarySection {
-        display: flex;
-        gap: 24px;
-        height: 56px;
-        min-height: 48px;
-        border-bottom: 1px solid var(--main-gray);
-        padding: 12px 0;
-
-        .summaryMetrics {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 2px;
-
-            .metricsData {
-                font-size: 12px;
-                text-wrap: nowrap;
-                color: var(--dirty-blue);
-                opacity: 0.5;
-            }
-
-            .menMetrics {
-                color: var(--coor-blue);
-                font-weight: 500;
-            }
-
-            .womenMetrics {
-                color: var(--color-pink);
-                font-weight: 500;
-            }
-        }
-
-        .summaryButtons {
-            display: flex;
-            align-self: center;
-            gap: 6px;
-            margin-left: auto;
-        }
+    &::-webkit-scrollbar {
+      width: 8px;
     }
 
-    .chartHistory {
-        display: flex;
-        flex-direction: column;
-        margin-top: auto;
-        gap: 4px;
-        overflow-y: scroll;
-        padding-right: 12px;
-
-        &::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease-in-out;
-            background-color: var(--transparent-gray02);
-        }
-
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: var(--text-main);
-        }
-
-        &::-webkit-scrollbar-track {
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .messageText {
-            font-size: 18px;
-            font-weight: 400;
-            color: var(--text-main);
-            word-break: break-all;
-            overflow-wrap: break-word;
-            white-space: pre-line;
-
-            @media (max-width: 768px) {
-                font-size: 16px;
-            }
-        }
-
-        .pendingMessage {
-            opacity: 0.3;
-        }
-
-        .messageTime {
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--dirty-blue);
-            opacity: 0.5;
-
-            @media (max-width: 768px) {
-                font-size: 12px;
-            }
-        }
+    &::-webkit-scrollbar-thumb {
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease-in-out;
+      background-color: var(--transparent-gray02);
     }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--text-main);
+    }
+
+    &::-webkit-scrollbar-track {
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .messageText {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-main);
+      word-break: break-all;
+      overflow-wrap: break-word;
+      white-space: pre-line;
+
+      @media (max-width: 768px) {
+        font-size: 16px;
+      }
+    }
+
+    .pendingMessage {
+      opacity: 0.3;
+    }
+
+    .messageTime {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--dirty-blue);
+      opacity: 0.5;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
+    }
+  }
 }
 
 .generalButton {
-    width: max-content;
-    padding: 4px 10px;
-    color: var(--text-main);
-    background-color: var(--transparent-blue);
-    border-radius: 8px;
-    outline: none;
-    font-size: 16px;
-    font-weight: 500;
-    border: none;
-    align-self: center;
-    text-align: center;
+  width: max-content;
+  padding: 4px 10px;
+  color: var(--text-main);
+  background-color: var(--transparent-blue);
+  border-radius: 8px;
+  outline: none;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  align-self: center;
+  text-align: center;
 
-    &:hover {
-        cursor: pointer;
-        color: var(--dirty-blue);
-    }
+  &:hover {
+    cursor: pointer;
+    color: var(--dirty-blue);
+  }
 
-    &:active {
-        background-color: var(--transparent-gray02);
-    }
+  &:active {
+    background-color: var(--transparent-gray02);
+  }
 }
 
 .buttonExit {
-    background-color: var(--transparent-red02);
+  background-color: var(--transparent-red02);
+  color: var(--main-red);
+  opacity: 0.8;
+
+  &:hover {
+    background-color: var(--transparent-red04);
     color: var(--main-red);
-    opacity: 0.8;
+  }
 
-    &:hover {
-        background-color: var(--transparent-red04);
-        color: var(--main-red);
-    }
-
-    &:active {
-        opacity: 1;
-    }
+  &:active {
+    opacity: 1;
+  }
 }
 
 .chartElement {
-    display: flex;
-    flex-direction: column;
-    max-width: 60%;
-    padding: 4px 10px;
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  max-width: 60%;
+  padding: 4px 10px;
+  gap: 2px;
 
-    @media (max-width: 768px) {
-        max-width: 80%;
-    }
+  @media (max-width: 768px) {
+    max-width: 80%;
+  }
 }
 
 .myChartElement {
-    align-items: flex-end;
-    background-color: var(--transparent-gray01);
-    align-self: flex-end;
-    border-radius: 12px 12px 0 12px;
+  align-items: flex-end;
+  background-color: var(--transparent-gray01);
+  align-self: flex-end;
+  border-radius: 12px 12px 0 12px;
 }
 
 .anonymChartElement {
-    align-items: flex-start;
-    background-color: var(--transparent-blue);
-    align-self: flex-start;
-    border-radius: 12px 12px 12px 0;
+  align-items: flex-start;
+  background-color: var(--transparent-blue);
+  align-self: flex-start;
+  border-radius: 12px 12px 12px 0;
 }
 
 .form {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    height: 48px;
-    margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  margin-top: 24px;
 }
 
 .sendButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    height: 48px;
-    width: 48px;
-    top: 2px;
-    left: 2px;
-    padding: 0 10px;
-    background-color: var(--transparent-blue);
-    border-radius: 12px;
-    outline: none;
-    font-size: 18px;
-    font-weight: 600;
-    border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 48px;
+  width: 48px;
+  top: 2px;
+  left: 2px;
+  padding: 0 10px;
+  background-color: var(--transparent-blue);
+  border-radius: 12px;
+  outline: none;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
 
-    @media (max-width: 768px) {
-        font-size: 16px;
-    }
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 
-    &:hover {
-        cursor: pointer;
-        background-color: var(--transparent-gray02);
-    }
+  &:hover {
+    cursor: pointer;
+    background-color: var(--transparent-gray02);
+  }
 
-    &:active {
-        background-color: var(--transparent-gray02);
-    }
+  &:active {
+    background-color: var(--transparent-gray02);
+  }
 }
 
 .disabledButton {
-    opacity: 0.4;
+  opacity: 0.4;
 
-    &:hover {
-        background-color: var(--transparent-blue);
-        color: var(--text-main);
-        cursor: default;
-    }
+  &:hover {
+    background-color: var(--transparent-blue);
+    color: var(--text-main);
+    cursor: default;
+  }
 
-    &:active {
-        background-color: var(--transparent-blue);
-    }
+  &:active {
+    background-color: var(--transparent-blue);
+  }
 }
 
 .textarea {
-    width: 100%;
-    height: 100%;
-    background-color: var(--background);
-    border-radius: 12px;
-    border: 1px solid var(--transparent-gray02);
-    outline: none;
-    color: var(--text-main);
-    padding: 12px 10px;
-    font-size: 18px;
-    font-weight: 400;
-    resize: none;
-    overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  border-radius: 12px;
+  border: 1px solid var(--transparent-gray02);
+  outline: none;
+  color: var(--text-main);
+  padding: 12px 10px;
+  font-size: 18px;
+  font-weight: 400;
+  resize: none;
+  overflow: hidden;
 
-    @media (max-width: 768px) {
-        font-size: 16px;
-    }
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 
-    &:focus {
-        border: 1px solid var(--main-gray);
-    }
+  &:focus {
+    border: 1px solid var(--main-gray);
+  }
 }
 
 .isTyping {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--dirty-blue);
-    position: absolute;
-    left: 12px;
-    bottom: 64px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--dirty-blue);
+  position: absolute;
+  left: 12px;
+  bottom: 64px;
 }
 
 .leftChatBlock {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  margin-top: 24px;
+
+  .leftChatText {
     width: 100%;
-    gap: 12px;
-    margin-top: 24px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--dirty-blue);
+  }
 
-    .leftChatText {
-        width: 100%;
-        text-align: center;
-        font-size: 16px;
-        font-weight: 400;
-        color: var(--dirty-blue);
+  .leftChatTextSecondary {
+    font-size: 14px;
+    color: var(--main-gray);
+    text-align: center;
+  }
+
+  .endChatButtons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 6px;
+
+    .chatEndButton {
+      min-width: 100px;
+    }
+  }
+
+  .buttonAddToBlackList {
+    color: var(--main-red);
+    background-color: var(--transparent-red02);
+    opacity: 0.8;
+
+    &:hover {
+      background-color: var(--transparent-red04);
     }
 
-    .leftChatTextSecondary {
-        font-size: 14px;
-        color: var(--main-gray);
-        text-align: center;
+    &:active {
+      opacity: 1;
     }
-
-    .endChatButtons {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        gap: 6px;
-
-        .chatEndButton {
-            min-width: 100px;
-        }
-    }
-
-    .buttonAddToBlackList {
-        color: var(--main-red);
-        background-color: var(--transparent-red02);
-        opacity: 0.8;
-
-        &:hover {
-            background-color: var(--transparent-red04);
-        }
-
-        &:active {
-            opacity: 1;
-        }
-    }
+  }
 }
 
 .connectionStatus {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
-    .connectionText {
-        font-size: 18px;
-        font-weight: 400;
-        color: var(--dirty-blue);
-        text-align: center;
-    }
+  .connectionText {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--dirty-blue);
+    text-align: center;
+  }
 
-    .dontLeaveText {
-        font-size: 14px;
-        color: var(--main-gray);
-        text-align: center;
-    }
+  .dontLeaveText {
+    font-size: 14px;
+    color: var(--main-gray);
+    text-align: center;
+  }
 
-    .countdown {
-        font-size: 14px;
-        color: var(--dirty-blue)
-    }
+  .countdown {
+    font-size: 14px;
+    color: var(--dirty-blue);
+  }
 }
 
 .connectionAnimation {
-    display: flex;
+  display: flex;
 }
 
 .connectionIcon {
-    animation: connect 5s linear infinite;
+  animation: connect 5s linear infinite;
 }
 
 .controlAllUsers {
-    position: fixed;
-    bottom: 32px;
-    right: 12px;
-    z-index: 11;
-    font-size: 12px;
-    text-wrap: nowrap;
-    color: var(--dirty-blue);
-    opacity: 0;
+  position: fixed;
+  bottom: 32px;
+  right: 12px;
+  z-index: 11;
+  font-size: 12px;
+  text-wrap: nowrap;
+  color: var(--dirty-blue);
+  opacity: 0;
 
-    @media (max-width: 768px) {
-        bottom: 48px;
-    }
+  @media (max-width: 768px) {
+    bottom: 48px;
+  }
 
-    &:hover {
-        cursor: default;
-        opacity: 0.3;
-    }
+  &:hover {
+    cursor: default;
+    opacity: 0.3;
+  }
 }

@@ -1,69 +1,74 @@
 :root {
-    --background: #0a0a0a;
-    --text-main: #EEEEEE;
-    --dirty-blue: #76ABAE;
-    --main-gray: #31363F;
-    --coor-blue: #4A90E2;
-    --color-pink: #E873BF;
-    --main-red: #C62300;
-    --error-color: #FEB21A;
-    --transparent-orange02: rgba(255, 166, 0, 0.2);
-    --transparent-orange03: rgba(255, 166, 0, 0.3);
-    --transparent-gray02: rgba(128, 128, 128, 0.2);
-    --transparent-gray01: rgba(128, 128, 128, 0.1);
-    --transparent-blue: rgba(118, 171, 174, 0.2);
-    --transparent-red02: rgba(139, 0, 0, 0.2);
-    --transparent-red04: rgba(139, 0, 0, 0.4);
+  --background: #0a0a0a;
+  --text-main: #eeeeee;
+  --dirty-blue: #76abae;
+  --main-gray: #31363f;
+  --coor-blue: #4a90e2;
+  --color-pink: #e873bf;
+  --main-red: #c62300;
+  --error-color: #feb21a;
+  --transparent-orange02: rgba(255, 166, 0, 0.2);
+  --transparent-orange03: rgba(255, 166, 0, 0.3);
+  --transparent-gray02: rgba(128, 128, 128, 0.2);
+  --transparent-gray01: rgba(128, 128, 128, 0.1);
+  --transparent-blue: rgba(118, 171, 174, 0.2);
+  --transparent-red02: rgba(139, 0, 0, 0.2);
+  --transparent-red04: rgba(139, 0, 0, 0.4);
 
-    --max-width: 1024px;
-    --mobile-width: 768px;
+  --max-width: 1024px;
+  --mobile-width: 768px;
 }
-
 
 html,
 body {
-    height: 100%;
-    max-width: 100vw;
-    overflow-x: hidden;
+  height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
-    background: var(--background);
+  background: var(--background);
 
-    &::-webkit-scrollbar {
-        display: none;
-    }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
-p, h1, h2, h3, h4, h5, h6, a {
-    color: var(--text-main);
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a {
+  color: var(--text-main);
 }
 
 input {
-    width: 100%;
-    height: 100%;
-    background-color: var(--background);
-    border-radius: 12px;
-    border: 1px solid var(--transparent-gray02);
-    outline: none;
-    color: var(--text-main);
-    padding: 0 10px;
-    font-size: 14px;
-    font-weight: 400;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  border-radius: 12px;
+  border: 1px solid var(--transparent-gray02);
+  outline: none;
+  color: var(--text-main);
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 400;
 
-    &:focus {
-        border: 1px solid var(--main-gray);
-    }
+  &:focus {
+    border: 1px solid var(--main-gray);
+  }
 }
-

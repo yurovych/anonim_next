@@ -1,1 +1,1 @@
-export {default} from './MainElement';
+export { default } from './MainElement';

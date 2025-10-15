@@ -1,34 +1,34 @@
 .footerContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 900px;
-    padding: 0 24px;
-    height: 100%;
-    gap: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 24px;
+  height: 100%;
+  gap: 4px;
 
-    @media (max-width: 768px) {
-        flex-direction: column-reverse;
-        justify-content: center;
-        padding: 0 12px;
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    justify-content: center;
+    padding: 0 12px;
+  }
+
+  .textContent {
+    font-size: 14px;
+    color: var(--dirty-blue);
+  }
+
+  .link {
+    text-decoration: none;
+    color: var(--dirty-blue);
+
+    &:hover {
+      text-decoration: underline;
     }
 
-    .textContent {
-        font-size: 14px;
-        color: var(--dirty-blue);
+    &:active {
+      text-decoration: none;
     }
-
-    .link {
-        text-decoration: none;
-        color: var(--dirty-blue);
-
-        &:hover {
-            text-decoration: underline;
-        }
-
-        &:active {
-            text-decoration: none;
-        }
-    }
+  }
 }
