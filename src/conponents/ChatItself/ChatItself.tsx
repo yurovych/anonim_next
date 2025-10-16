@@ -365,7 +365,7 @@ const ChatItself: React.FC<ChatItselfProps> = ({
                         </div>
                         <div className={styles.summaryMetrics}>
                           <p className={styles.metricsData}>
-                            Вам підходять: {suitableMembers}
+                            Для вас: {suitableMembers}
                           </p>
                         </div>
                       </>
