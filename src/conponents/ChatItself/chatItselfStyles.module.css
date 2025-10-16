@@ -80,23 +80,28 @@
 
   .summarySection {
     display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 16px;
     height: 56px;
     min-height: 48px;
     border-bottom: 1px solid var(--main-gray);
-    padding: 12px 0;
+
+    .summaryData {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      height: 100%;
+      padding: 2px 0;
+      gap: 2px
+    }
 
     .summaryMetrics {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2px;
-
-      .usersOnline {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+      justify-content: flex-start;
+      gap: 16px;
+      width: 100%;
 
       .usersDistribution {
         display: flex;

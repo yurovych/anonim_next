@@ -348,54 +348,71 @@ const ChatItself: React.FC<ChatItselfProps> = ({
             <div className={styles.chartHistoryWrapper}>
               {!theOneWhoLeft && status !== statusType.disconnected ? (
                 <div className={styles.summarySection}>
-                  <div className={styles.summaryMetrics}>
-                    <p className={styles.metricsData}>
-                      Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'}{' '}
-                      {userData.age}р
-                    </p>
-                    <p className={styles.metricsData}>
-                      {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}: від{' '}
-                      {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
-                    </p>
-                    <span style={{ fontSize: '12px' }}>.</span>
-                  </div>
-
-                  {metrics ? (
+                  <div className={styles.summaryData}>
                     <div className={styles.summaryMetrics}>
-                      <div className={styles.usersOnline}>
-                        <p className={styles.metricsData}>
-                          Онлайн: {metrics.usersCount}
-                        </p>
-                        <div className={styles.usersDistribution}>
-                          (
-                          <img
-                            className={styles.personIcon}
-                            src="/icons/man_icon.svg"
-                            alt="send"
-                          />
-                          &nbsp;
-                          {menUsers}
-                          &nbsp; - &nbsp;
-                          {womenUsers}
-                          &nbsp;
-                          <img
-                            className={styles.personIcon}
-                            src="/icons/women_icon.svg"
-                            alt="send"
-                          />
-                          )
-                        </div>
-                      </div>
                       <p className={styles.metricsData}>
-                        В очікуванні: {metrics.waitingCount}
-                      </p>
-                      <p className={styles.metricsData}>
-                        Вам підходять: {suitableMembers}
+                        Ви: {userData.sex === 'male' ? 'Чоловік' : 'Дівчина'}{' '}
+                        {userData.age}р
                       </p>
                     </div>
-                  ) : (
-                    ''
-                  )}
+
+                    {metrics ? (
+                      <>
+                        <div className={styles.summaryMetrics}>
+                          <p className={styles.metricsData}>
+                            Онлайн: {metrics.usersCount}
+                          </p>
+                        </div>
+                        <div className={styles.summaryMetrics}>
+                          <p className={styles.metricsData}>
+                            Вам підходять: {suitableMembers}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+
+                  <div className={styles.summaryData}>
+                    <div className={styles.summaryMetrics}>
+                      <p className={styles.metricsData}>
+                        {interlocutorData.sex === 'male' ? 'Йому' : 'Їй'}: від{' '}
+                        {interlocutorData.ageFrom} до {interlocutorData.ageTo}р
+                      </p>
+                    </div>
+
+                    {metrics ? (
+                      <>
+                        <div className={styles.summaryMetrics}>
+                          <div className={styles.usersDistribution}>
+                            <img
+                              className={styles.personIcon}
+                              src="/icons/man_icon.svg"
+                              alt="send"
+                            />
+                            &nbsp;
+                            {menUsers}
+                            &nbsp; - &nbsp;
+                            {womenUsers}
+                            &nbsp;
+                            <img
+                              className={styles.personIcon}
+                              src="/icons/women_icon.svg"
+                              alt="send"
+                            />
+                          </div>
+                        </div>
+                        <div className={styles.summaryMetrics}>
+                          <p className={styles.metricsData}>
+                            В очікуванні: {metrics.waitingCount}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </div>
 
                   <div className={styles.summaryButtons}>
                     <p
